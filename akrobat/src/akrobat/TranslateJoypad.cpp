@@ -97,8 +97,9 @@ class Listener
                 setControllerType("Microsoft Xbox 360 Wired Controller");
         }else if(amountButtons == 12 && amountAxis == 6){
                 setControllerType("Logitech Gamepad F710");
-
-        }
+        }else if(amountButtons == 13 && amountAxis == 8){
+			setControllerType("Dualshock 4");
+		}
 
 		setAxisValue(msg->axes);
 		setButtonsValue(msg->buttons);
@@ -146,7 +147,7 @@ int main(int argc, char **argv)
 
 
 		//Überprüfen, ob der richtige Controller angeschlossen ist
-		if(ct != "Logitech Gamepad F710" && ct != "Microsoft Xbox 360 Wired Controller")
+		if(ct != "Logitech Gamepad F710" && ct != "Microsoft Xbox 360 Wired Controller" && ct != "Dualshock 4")
 		{
 			std::cout << "Warte auf passenden Controller" << std::endl;
 			ros::spinOnce();
