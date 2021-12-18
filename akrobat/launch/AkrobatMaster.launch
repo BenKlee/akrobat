@@ -7,9 +7,9 @@
 
   <!-- configuration end -->
 
-  <!-- Load the URDF into the ROS Parameter Server -->
-  <param if="$(arg high_poly_model)" name="robot_description" textfile="$(find akrobat)/urdf/hexapod_high_poly.urdf" />
-  <param unless="$(arg high_poly_model)" name="robot_description" textfile="$(find akrobat)/urdf/hexapod_low_poly.urdf" />
+  <include file="$(find akrobat)/launch/model.launch" if="$(arg sim)">
+    <arg name="high_poly_model" value="$(arg high_poly_model)"/>
+  </include>
 
 
   <param name="use_gui" value="$(arg gui)" />
