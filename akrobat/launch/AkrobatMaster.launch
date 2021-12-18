@@ -3,12 +3,15 @@
   <!-- configuration -->
   <arg name="gui" default="false" />
   <arg name="sim" default="false" />
-  <arg name="model" default="$(find akrobat)/urdf/hexapod.urdf" />
+  <arg name="high_poly_model" default="false"/>
 
   <!-- configuration end -->
 
+  <!-- Load the URDF into the ROS Parameter Server -->
+  <param if="$(arg high_poly_model)" name="robot_description" textfile="$(find akrobat)/urdf/hexapod_high_poly.urdf" />
+  <param unless="$(arg high_poly_model)" name="robot_description" textfile="$(find akrobat)/urdf/hexapod_low_poly.urdf" />
 
-  <param name="robot_description" textfile="$(arg model)" />
+
   <param name="use_gui" value="$(arg gui)" />
 
   <!-- start joystick -->
