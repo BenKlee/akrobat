@@ -16,7 +16,6 @@
 
   <include file="$(find akrobat)/launch/gazebo.launch" if="$(arg gazebo)">
     <arg name="world" default="$(arg gazebo_world)"/>
-    <arg name="rviz" value="$(arg rviz)"/>
   </include>
 
   <!-- TODO is this still used? -->
