@@ -1,9 +1,12 @@
 <!-- -*- mode: XML -*- -->
 <launch>
   <!-- configuration -->
-  <arg name="gui" default="false" />
-  <arg name="sim" default="false" />
+  <arg name="rviz" default="false" />
+  <arg name="gazebo" default="false"/>
+  <arg name="sim" default="$(arg gazebo)" />
   <arg name="high_poly_model" default="false"/>
+
+  <arg name="gazebo_world" default="default"/>
 
   <!-- configuration end -->
 
@@ -11,8 +14,13 @@
     <arg name="high_poly_model" value="$(arg high_poly_model)"/>
   </include>
 
+  <include file="$(find akrobat)/launch/gazebo.launch" if="$(arg gazebo)">
+    <arg name="world" default="$(arg gazebo_world)"/>
+    <arg name="rviz" value="$(arg rviz)"/>
+  </include>
 
-  <param name="use_gui" value="$(arg gui)" />
+  <!-- TODO is this still used? -->
+  <!-- <param name="use_gui" value="$(arg gui)" /> -->
 
   <!-- start joystick -->
   <node respawn="true" pkg="joy" type="joy_node" name="akrobatJoy">
@@ -39,7 +47,7 @@
 
 
   <!-- start rviz-->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" if="$(arg gui)" />
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" if="$(arg rviz)" />
   
  
 <!-- start state machine 
