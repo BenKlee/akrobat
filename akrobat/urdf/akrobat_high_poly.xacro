@@ -13,7 +13,7 @@
 		<plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
 			<alwaysOn>true</alwaysOn>
 			<updateRate>30.0</updateRate>
-			<bodyName>base</bodyName>
+			<bodyName>base_link</bodyName>
 			<topicName>odom</topicName>
 			<gaussianNoise>0</gaussianNoise>
 			<frameName>world</frameName>
@@ -22,9 +22,9 @@
 		</plugin>
 	</gazebo>
 
-	<link name="base"/>
-	<joint name="base_to_akrobat_joint" type="fixed">
-		<parent link="base"/>
+	<link name="base_link"/>
+	<joint name="base_link_to_akrobat_joint" type="fixed">
+		<parent link="base_link"/>
 		<child link="akrobat_link"/>
 	</joint>
 	<link name="akrobat_link">
