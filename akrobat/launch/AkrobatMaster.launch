@@ -8,7 +8,7 @@
 
   <arg name="gazebo_world" default="default"/>
 
-  <arg name="simulate_joystick_forward" default="true"/>
+  <arg name="simulate_joystick_forward" default="false"/>
   <node if="$(arg simulate_joystick_forward)" name="joystick_emulator" pkg="akrobat" type="joystick_emulator.py"/>
   <!-- configuration end -->
 
