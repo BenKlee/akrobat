@@ -53,4 +53,10 @@
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
     args="-urdf -model akrobat -param robot_description"/>
 
+  <!-- start publishing joint positions to gazebo -->
+  <node name="joint_states_to_gazebo" pkg="akrobat" type="joint_states_to_gazebo.py"/>
+
+
+  
+
 </launch>
