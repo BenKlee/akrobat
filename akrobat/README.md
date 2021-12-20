@@ -34,11 +34,39 @@ based on ROS.
 
 3. roslaunch the project with your desired running options
 
-Launch Akrobat as simulation:
-```roslaunch akrobat AkrobatMaster.launch```
+There are two launch configurations
 
-Launch Akrobat robot and the simulation as well:
-```roslaunch akrobat AkrobatMaster.launch gui:=true```
+- ```master.launch```\
+and
+- ```gazebo.launch```
+
+ ```master.launch``` is designed for launching the robot when using the actual physical robot
+ ```gazebo.launch``` is designed to launch the robot in the gazebo simulation
+
+Both launch configurations can be given arguments
+- ```master.launch```
+    - ```rviz```
+        - launches the rviz visualization tool along with the robot
+        - ```default: false```
+    - ```robot_connected```
+        - wether the robot is currently connected to the computer 
+        - ```default: true```
+        - turn off if just testing in rviz
+
+- ```gazebo.launch```
+    - ```world```
+        - the world to launch the robot into in gazebo
+        - ```default: "default"```
+        - when changing from default, make sure there is a ```.world``` file in the ```/worlds``` folder corrensponding to the value you provided
+    - ```gui```
+        - wether to show the gazebo gui
+        - ```default: true```
+        - can be turned off to speed up simulation
+    - ```rviz```
+        - wether to launch rviz
+        - ```default: false```
+        - can be used to visualize the robot when gui is turned off
+
 
 Troubleshooting:
 

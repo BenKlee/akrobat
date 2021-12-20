@@ -1,0 +1,25 @@
+<!-- -*- mode: XML -*- -->
+<launch>
+  <!-- configuration -->
+  <arg name="using_real_robot" default="true"/>
+  <!-- configuration end -->
+
+  <!-- start robot state publisher -->
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher">
+    <param name="publish_frequency" value="20.0" />
+  </node>
+
+  <!-- include dynamixel if connected to real physical robot -->
+  <include file="$(find akrobat)/launch/include/dynamixel.launch" if="$(arg using_real_robot)" />
+
+  <!-- start akrobat walking algorithms -->
+  <node name="akrobat" pkg="akrobat" type="akrobat" output="screen" required="true">
+    <remap from="/goal_joint_states" to="/joint_states" unless="$(arg using_real_robot)"/>
+  </node>
+
+  <!-- start translationNode -->
+  <node name="translateJoypad" pkg="akrobat" type="translateJoypad"></node>
+
+<!-- start state machine 
+  <node name="state_machine" pkg="akrobat" type="smach_example_state_machine.py" output="screen" respawn="true"></node> -->
+</launch>

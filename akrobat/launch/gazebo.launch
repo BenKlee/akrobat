@@ -1,31 +1,37 @@
 <launch>
 
-  <!-- these are the arguments you can pass this launch file, for example paused:=true -->
+  <arg name="gui" default="true"/>
+  <arg name="rviz" default="false"/>
   <arg name="world" default="default"/>
 
-  <arg name="paused" default="false"/>
-  <arg name="use_sim_time" default="true"/>
-  <arg name="gui" default="true"/>
-  <arg name="headless" default="false"/>
-  <arg name="debug" default="false"/>
+
+  <include file="$(dirname)/include/model.launch">
+    <arg name="param_name" value="robot_description"/>
+    <arg name="high_poly" value="false"/>
+  </include>
+
+  <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
 
 
-  <!-- We resume the logic in empty_world.launch, changing only the name of the world to be launched -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(find akrobat)/worlds/$(arg world).world"/>
-    <arg name="debug" value="$(arg debug)" />
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="paused" value="$(arg paused)"/>
-    <arg name="use_sim_time" value="$(arg use_sim_time)"/>
-    <arg name="headless" value="$(arg headless)"/>
+  <include file="$(dirname)/include/akrobat.launch">
+    <arg name="using_real_robot" value="false"/>
   </include>
 
 
-  <!-- Load joint controller configurations from YAML file to parameter server -->
+  <!-- launch gazebo with the given world -->
+  <include file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" value="$(find akrobat)/worlds/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="true"/>
+    <arg name="physics" value="ode"/>
+  </include>
+
+
+  <!-- load joint controller configurations from YAML file to parameter server -->
   <rosparam file="$(find akrobat)/config/akrobat_control.yaml" command="load"/>
 
 
-   <!-- load the joint controllers -->
+  <!-- load the joint controllers -->
   <node
     name="controller_spawner"
     pkg="controller_manager"
@@ -33,7 +39,7 @@
     respawn="false"
     output="screen"
     ns="/akrobat"
-    args="joint_state_controller
+    args="
     m11_position_controller m12_position_controller m13_position_controller
     m21_position_controller m22_position_controller m23_position_controller
     m31_position_controller m32_position_controller m33_position_controller
@@ -42,21 +48,11 @@
     m61_position_controller m62_position_controller m63_position_controller"/>
 
 
-  <!-- convert joint states to TF transforms for rviz, etc -->
-  <!-- <node name="robot_state_publisher_gazebo" pkg="robot_state_publisher" type="robot_state_publisher"
-    respawn="false" output="screen">
-    <remap from="/joint_states" to="/akrobat/joint_states" />
-  </node> -->
-
-
   <!-- send a service call to gazebo_ros to spawn a URDF robot -->
   <node name="urdf_spawner" pkg="gazebo_ros" type="spawn_model" respawn="false" output="screen"
     args="-urdf -model akrobat -param robot_description"/>
 
   <!-- start publishing joint positions to gazebo -->
   <node name="joint_states_to_gazebo" pkg="akrobat" type="joint_states_to_gazebo.py"/>
-
-
-  
 
 </launch>

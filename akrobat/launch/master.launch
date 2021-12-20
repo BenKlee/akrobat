@@ -1,0 +1,14 @@
+<launch>
+    <arg name="rviz" default="false"/>
+    <arg name="robot_connected" default="true"/>
+
+
+    <!-- include the main akrobat logic -->
+    <include file="$(dirname)/include/akrobat.launch">
+        <arg name="using_real_robot" value="$(arg robot_connected)"/>
+    </include>
+
+    <!-- start rviz if desired -->
+    <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
+
+</launch>
