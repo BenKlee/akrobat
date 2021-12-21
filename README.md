@@ -68,6 +68,9 @@ Both launch configurations can be given arguments
         - can be used to visualize the robot when gui is turned off
 
 
+For testing purposes without a controller (joystick) available, a joystick emulator has been implemented. To use it run ```rosrun akrobat joystick_emulator``` while the robot is running.
+
+
 Troubleshooting:
 
 If you get an error like "[...] in the folder [akrobat] couldn't be found a file [AkrobatMaster.launch] [...]" execute this line:
