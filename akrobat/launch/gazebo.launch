@@ -5,10 +5,7 @@
   <arg name="world_path" default="$(find akrobat)/worlds/default.world" doc="String. The full path to the world file to launch"/>
 
 
-  <include file="$(dirname)/include/model.launch">
-    <arg name="param_name" value="robot_description"/>
-    <arg name="high_poly" value="false"/>
-  </include>
+  <include file="$(dirname)/include/model.launch"/>
 
   <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
 

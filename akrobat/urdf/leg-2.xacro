@@ -5,7 +5,7 @@
 	<link name="2_coxa_link">
 		<visual>
 			<geometry>
-				<mesh filename="${stl_path}coxa_r_link.stl"/>
+				<mesh filename="${stl_path_visual}coxa_r_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 			<material name="grey">
@@ -18,7 +18,7 @@
 		</inertial>
 		<collision>
 			<geometry>
-				<mesh filename="${stl_path}coxa_r_link.stl"/>
+				<mesh filename="${stl_path_collision}coxa_r_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 		</collision>
@@ -33,7 +33,7 @@
 	<link name="2_femur_link">
 		<visual>
 			<geometry>
-				<mesh filename="${stl_path}femur_link.stl"/>
+				<mesh filename="${stl_path_visual}femur_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 			<material name="grey">
@@ -46,7 +46,7 @@
 		</inertial>
 		<collision>
 			<geometry>
-				<mesh filename="${stl_path}femur_link.stl"/>
+				<mesh filename="${stl_path_collision}femur_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 		</collision>
@@ -61,7 +61,7 @@
 	<link name="2_tibia_link">
 		<visual>
 			<geometry>
-				<mesh filename="${stl_path}tibia_link.stl"/>
+				<mesh filename="${stl_path_visual}tibia_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 			<material name="grey">
@@ -74,7 +74,7 @@
 		</inertial>
 		<collision>
 			<geometry>
-				<mesh filename="${stl_path}tibia_link.stl"/>
+				<mesh filename="${stl_path_collision}tibia_link.stl"/>
 			</geometry>
 			<origin rpy="0 0 0" xyz="0 0 0"/>
 		</collision>

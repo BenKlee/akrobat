@@ -3,7 +3,6 @@
   <!-- include high poly model -->
   <include file="$(dirname)/model.launch">
     <arg name="param_name" value="rviz_robot_description"/>
-    <arg name="high_poly" value="true"/>
   </include>
 
   <!-- start rviz -->
