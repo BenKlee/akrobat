@@ -1,0 +1,24 @@
+<launch>
+    <arg name="path_is_relative" default="true" doc="Boolean. Declares if the output_path argument is a relative or absolute path"/>
+    <arg name="output_path" default="/../worlds" doc="String. The path where the generated world file will be written (will overwrite existing files). See path_is_relative"/>
+        <arg name="outpath" value="$(eval dirname() + output_path if path_is_relative else output_path)"/>
+
+    <arg name="filename" default="generated" doc="String. The name of the world file. Given without the '.world'-ending"/>
+    <arg name="robo_platform" default="0,0" doc="Float tuple. The size of the starting platform for the robot in meters in the format 'x,y'. Omitting will not spawn a platform"/>
+
+    <arg name="max_height_difference" doc="Float. The maximum height difference between blocks in meters"/>
+    <arg name="block_size" doc="Float. The block size in meters. Blocks are square so this is a single number"/>
+    <arg name="block_amount" doc="Integer tuple. How many blocks are spawned in the x and y direction. Enter like 'x,y' without space"/>
+
+    <node 
+        pkg="akrobat"
+        name="generate_world_file"
+        type="generate_world_file.py"
+        args="$(eval f'--outpath {outpath} --filename {filename} --platform {robo_platform} {max_height_difference} {block_size} {block_amount}')"
+        output="screen"/>
+
+    <include file="$(dirname)/gazebo.launch">
+        <arg name="world_path" value="$(arg outpath)/$(arg filename).world"/>
+    </include>
+
+</launch>
