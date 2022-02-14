@@ -2,7 +2,47 @@
 
   <arg name="gui" default="true" doc="Boolean. Wether to launch the gui of gazebo or run it in the background"/>
   <arg name="rviz" default="false" doc="Boolean. Wether to launch rviz alongside gazebo"/>
-  <arg name="world_path" default="$(find akrobat)/worlds/default.world" doc="String. The full path to the world file to launch"/>
+  <arg name="generate_world" default="false" doc="Boolean. Wether to generate a world file. Requires additional arguments. Run 'roslaunch akrobat generate.launch --ros-args' to see these arguments"/>
+  <arg name="world" unless="$(arg generate_world)" default="default" doc="String. The name of a world file in worlds folder to launch. Not used if generate_world is true"/>
+
+  <group if="$(arg generate_world)">
+    <arg name="path_is_relative" default="true" doc="Boolean. Declares if the output_path argument is a relative or absolute path"/>
+    <arg name="output_path" default="/../worlds" doc="String. The path where the generated world file will be written (will overwrite existing files). See path_is_relative"/>
+        <arg name="outpath" value="$(eval dirname() + output_path if path_is_relative else output_path)"/>
+
+    <arg name="filename" default="generated" doc="String. The name of the world file. Given without the '.world'-ending"/>
+    <arg name="robo_platform" default="0,0" doc="Float tuple. The size of the starting platform for the robot in meters in the format 'x,y'. Omitting will not spawn a platform"/>
+
+    <arg name="max_height_difference" doc="Float. The maximum height difference between blocks in meters"/>
+    <arg name="block_size" doc="Float. The block size in meters. Blocks are square so this is a single number"/>
+    <arg name="block_amount" doc="Integer tuple. How many blocks are spawned in the x and y direction. Enter like 'x,y' without space"/>
+
+    <include if="$(arg generate_world)" file="$(dirname)/include/generate.launch">
+      <arg name="path_is_relative" value="false"/>
+      <arg name="output_path" value="$(arg outpath)"/>
+      <arg name="filename" value="$(arg filename)"/>
+      <arg name="robo_platform" value="$(arg robo_platform)"/>
+      <arg name="max_height_difference" value="$(arg max_height_difference)"/>
+      <arg name="block_size" value="$(arg block_size)"/>
+      <arg name="block_amount" value="$(arg block_amount)"/>
+    </include>
+
+    <!-- launch gazebo with the given world -->
+    <include file="$(find gazebo_ros)/launch/empty_world.launch">
+      <arg name="world_name" value="$(arg outpath)/$(arg filename).world"/>
+      <arg name="gui" value="$(arg gui)" />
+      <arg name="use_sim_time" value="true"/>
+      <arg name="physics" value="ode"/>
+    </include>
+  </group>
+
+  <!-- launch gazebo with the given world -->
+  <include unless="$(arg generate_world)" file="$(find gazebo_ros)/launch/empty_world.launch">
+    <arg name="world_name" unless="$(arg generate_world)" value="$(find akrobat)/worlds/$(arg world).world"/>
+    <arg name="gui" value="$(arg gui)" />
+    <arg name="use_sim_time" value="true"/>
+    <arg name="physics" value="ode"/>
+  </include>
 
 
   <include file="$(dirname)/include/model.launch"/>
@@ -15,13 +55,7 @@
   </include>
 
 
-  <!-- launch gazebo with the given world -->
-  <include file="$(find gazebo_ros)/launch/empty_world.launch">
-    <arg name="world_name" value="$(arg world_path)"/>
-    <arg name="gui" value="$(arg gui)" />
-    <arg name="use_sim_time" value="true"/>
-    <arg name="physics" value="ode"/>
-  </include>
+  
 
 
   <!-- load joint controller configurations from YAML file to parameter server -->

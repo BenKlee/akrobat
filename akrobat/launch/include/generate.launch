@@ -17,8 +17,4 @@
         args="$(eval f'--outpath {outpath} --filename {filename} --platform {robo_platform} {max_height_difference} {block_size} {block_amount}')"
         output="screen"/>
 
-    <include file="$(dirname)/gazebo.launch">
-        <arg name="world_path" value="$(arg outpath)/$(arg filename).world"/>
-    </include>
-
 </launch>
