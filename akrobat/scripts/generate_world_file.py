@@ -44,6 +44,23 @@ class Block:
     def __repr__(self) -> str:
         return self.__str__()
 
+    @property
+    def height(self):
+      return self.size[2]
+
+    @property
+    def x(self):
+      return self.position[0]
+      
+    @property
+    def y(self):
+      return self.position[1]
+
+    @property
+    def z(self):
+      return self.position[2]
+    
+
     def to_xml_string(self):
         return f'''<model name='{self.__hash__()}'>
       <static>1</static>
@@ -150,22 +167,25 @@ class Terrain:
         x,y,z = block.position
         block.position = (x+offset_x, y+offset_y, z)
 
-  def __find_extremes(self, x: int, y: int):
-    minimum = 0
-    maximum = 0
+  def __find_extremes(self, x: int, y: int, treat_none_as_height_zero=False):
+    lowest = 0
+    highest = 0
     for x_offset in range(-1, 1):
-        for y_offset in range(-1, 1):
-            u = x + x_offset
-            v = y + y_offset
+      for y_offset in range(-1, 1):
+        u = x + x_offset
+        v = y + y_offset
 
-            if not (u < 0 or u >= len(self._grid) or v < 0 or v >= len(self._grid[u])):
-                if self._grid[u][v] is not None:
-                    value = self._grid[u][v].size[2]
-                    minimum = value if value < minimum else minimum
-                    maximum = value if value > maximum else maximum
+        if not (u < 0 or u >= len(self._grid) or v < 0 or v >= len(self._grid[u])):
+          if self._grid[u][v] is not None:
+            value = self._grid[u][v].size[2]
+            lowest = value if value < lowest else lowest
+            highest = value if value > highest else highest
+          elif treat_none_as_height_zero:
+            lowest = 0
 
-    max_height = minimum + self._max_height_difference
-    min_height  = max(maximum - self._max_height_difference, 0)
+
+    max_height = lowest + self._max_height_difference
+    min_height  = max(highest - self._max_height_difference, 0)
 
     return (min_height, max_height)
 
@@ -226,12 +246,42 @@ class Terrain:
     end_x = int(self._grid_center[0] + mask_x[1] + 1)
     end_y = int(self._grid_center[1] + mask_y[1] + 1)
 
-    # print(self._grid_center, mask_x, mask_y)
+    print(start_x, end_x, start_y, end_y)
 
     for u in range(start_x, end_x):
       for v in range (start_y, end_y):
         self._grid[v][u] = None
         # print(f'removed at ({v}, {u})')
+
+    for u in range(start_x-1, end_x+1):
+      for v in range (start_y-1, end_y+1):
+        self.__recalculate_height(u, v)
+
+  def __recalculate_height(self, x: int, y: int):
+    try:
+      block = self._grid[y][x]
+    except:
+      print('grid is too small for starting platform, raise block_amount')
+      sys.exit()
+    if (block is None): return
+
+    print(f'recalculate {x},{y} with height {block.height}')
+
+    min_height, max_height = self.__find_extremes(x,y,True)
+
+    if block.height < min_height or block.height > max_height:
+      new_height = random.uniform(min_height, max_height).__round__(3)
+      self._grid[y][x] = Block((self._block_size, self._block_size, new_height), (block.x, block.y, new_height/2))
+      print(f'changed height to {new_height}')
+
+      self.__recalculate_neighbors(x, y)
+
+  def __recalculate_neighbors(self, x: int, y: int):
+    for u in range(x-1, x+1):
+      for v in range(y-1, y+1):
+        if not (u is x and v is y):
+          self.__recalculate_height(u, v)
+
 
 
 import getopt
