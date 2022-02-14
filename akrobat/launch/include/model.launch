@@ -1,8 +1,7 @@
 <launch>
-  <arg name="param_name" default="robot_description"/>
   
   <!-- Load the URDF into the ROS Parameter Server -->
-  <param name="$(arg param_name)"
+  <param name="robot_description"
     command="$(find xacro)/xacro '$(find akrobat)/urdf/akrobat.xacro'"/>
 
 </launch>

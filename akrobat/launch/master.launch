@@ -9,6 +9,7 @@
     </include>
 
     <!-- start rviz if desired -->
+    <include if="$(arg rviz)" file="$(dirname)/include/model.launch"/>
     <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
 
 </launch>
