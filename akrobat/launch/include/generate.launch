@@ -1,6 +1,6 @@
 <launch>
     <arg name="path_is_relative" default="true" doc="Boolean. Declares if the output_path argument is a relative or absolute path"/>
-    <arg name="output_path" default="/../worlds" doc="String. The path where the generated world file will be written (will overwrite existing files). See path_is_relative"/>
+    <arg name="output_path" default="$(find akrobat)/worlds" doc="String. The path where the generated world file will be written (will overwrite existing files). See path_is_relative"/>
         <arg name="outpath" value="$(eval dirname() + output_path if path_is_relative else output_path)"/>
 
     <arg name="filename" default="generated" doc="String. The name of the world file. Given without the '.world'-ending"/>
