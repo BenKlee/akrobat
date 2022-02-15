@@ -10,19 +10,6 @@
 		</plugin>
 	</gazebo>
 
-	<gazebo>
-		<plugin name="p3d_base_controller" filename="libgazebo_ros_p3d.so">
-			<alwaysOn>true</alwaysOn>
-			<updateRate>30.0</updateRate>
-			<bodyName>base_link</bodyName>
-			<topicName>odom</topicName>
-			<gaussianNoise>0</gaussianNoise>
-			<frameName>world</frameName>
-			<xyzOffsets>0 0 0</xyzOffsets>
-			<rpyOffsets>0 0 0</rpyOffsets>
-		</plugin>
-	</gazebo>
-
 	<link name="base_link"/>
 	<joint name="base_link_to_akrobat_joint" type="fixed">
 		<parent link="base_link"/>
