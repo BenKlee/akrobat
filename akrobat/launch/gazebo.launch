@@ -44,10 +44,9 @@
     <arg name="physics" value="ode"/>
   </include>
 
+  <param name="robot_description" command="$(find xacro)/xacro '$(find akrobat)/urdf/akrobat.xacro'"/>
 
-  <include file="$(dirname)/include/model.launch"/>
-
-  <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
+  <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" />
 
 
   <include file="$(dirname)/include/akrobat.launch">
@@ -68,7 +67,6 @@
     pkg="controller_manager"
     type="spawner"
     respawn="false"
-    output="screen"
     ns="/akrobat"
     args="
     m11_position_controller m12_position_controller m13_position_controller

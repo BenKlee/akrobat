@@ -15,6 +15,6 @@
         name="generate_world_file"
         type="generate_world_file.py"
         args="$(eval f'--outpath {outpath} --filename {filename} --platform {robo_platform} {max_height_difference} {block_size} {block_amount}')"
-        output="screen"/>
+    />
 
 </launch>

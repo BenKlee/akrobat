@@ -8,8 +8,8 @@
         <arg name="using_real_robot" value="$(arg robot_connected)"/>
     </include>
 
-    <!-- start rviz if desired -->
-    <include if="$(arg rviz)" file="$(dirname)/include/model.launch"/>
-    <include if="$(arg rviz)" file="$(dirname)/include/rviz.launch"/>
+    <!-- load robot description and start rviz if desired -->
+    <param if="$(arg rviz)" name="robot_description" command="$(find xacro)/xacro '$(find akrobat)/urdf/akrobat.xacro'"/>
+    <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" />
 
 </launch>

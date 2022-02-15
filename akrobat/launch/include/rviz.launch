@@ -1,6 +1,0 @@
-<launch>
-
-  <!-- start rviz -->
-  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" />
-
-</launch>
