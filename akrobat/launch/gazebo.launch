@@ -68,13 +68,7 @@
     type="spawner"
     respawn="false"
     ns="/akrobat"
-    args="
-    m11_position_controller m12_position_controller m13_position_controller
-    m21_position_controller m22_position_controller m23_position_controller
-    m31_position_controller m32_position_controller m33_position_controller
-    m41_position_controller m42_position_controller m43_position_controller
-    m51_position_controller m52_position_controller m53_position_controller
-    m61_position_controller m62_position_controller m63_position_controller"/>
+    args="joint_position_controller"/>
 
 
   <!-- send a service call to gazebo_ros to spawn a URDF robot -->
