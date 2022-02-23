@@ -37,10 +37,14 @@
 		</collision>
 	</link>
 
-	<xacro:include filename="$(find akrobat)/urdf/leg-1.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/leg-2.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/leg-3.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/leg-4.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/leg-5.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/leg-6.xacro"/>
+	<xacro:include filename="$(find akrobat)/urdf/left_leg.xacro"/>
+	<xacro:include filename="$(find akrobat)/urdf/right_leg.xacro"/>
+
+	<xacro:left_leg leg_number="2" />
+	<xacro:left_leg leg_number="4" />
+	<xacro:left_leg leg_number="6" />
+	<xacro:right_leg leg_number="1" />
+	<xacro:right_leg leg_number="3" />
+	<xacro:right_leg leg_number="5" />
+
 </robot>
