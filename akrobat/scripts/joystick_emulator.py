@@ -129,7 +129,7 @@ if __name__ == '__main__':
 - left bumper:      q
 - right bumper:     e
 - face buttons:     1-4
-- directional pad:  numpad 4,6,8,2 as left, right, up, down
+- directional pad:  numpad 4,6,8,2 as left, right, up, down (requires numlock off)
 ''')
 
         listener = keyboard.Listener(
