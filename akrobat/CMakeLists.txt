@@ -131,16 +131,11 @@ translateJoypad
 src/akrobat/TranslateJoypad.cpp
 )
 
-add_executable(
-joystick_emulator 
-src/akrobat/joystick_emulator.cpp
-)
 
 #target_link_libraries(akrobat akrobat_init)
 #target_link_libraries(commander ${catkin_LIBRARIES})
 target_link_libraries(akrobat ${catkin_LIBRARIES})
 target_link_libraries(translateJoypad ${catkin_LIBRARIES})
-target_link_libraries(joystick_emulator ${catkin_LIBRARIES})
 
 ## Declare a cpp library
 # add_library(akrobat
@@ -178,6 +173,11 @@ install(PROGRAMS
 
 catkin_install_python(PROGRAMS
   scripts/joint_states_to_gazebo.py
+  DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
+)
+
+catkin_install_python(PROGRAMS
+  scripts/joystick_emulator.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
