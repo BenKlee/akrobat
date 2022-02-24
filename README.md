@@ -28,6 +28,8 @@ based on ROS.
 
 3. catkin_make your workspace
 
+- this needs to be done every time you change something in the code (does not include launch files or things like worlds, urdf, stl or yaml-configs)
+
 - `cd ~/catkin_ws/`
 
 - `catkin_make`
@@ -46,13 +48,13 @@ and
  `gazebo.launch` is designed to launch the robot in the gazebo simulation
 
 Both launch configurations can be given arguments. Run either\
-`roslaunch akrobat gazebo.launch --ros-args`\
+`roslaunch akrobat master.launch --ros-args`\
 or\
 `roslaunch akrobat gazebo.launch --ros-args`\
 to see their arguments' descriptions and default values
 
 
-For testing purposes without a controller (joystick) available, a joystick emulator has been implemented. To use it run `rosrun akrobat joystick_emulator`
+For testing purposes without a controller (joystick) available, a joystick emulator has been implemented. To use it run `rosrun akrobat joystick_emulator.py`
 
 
 Troubleshooting:
