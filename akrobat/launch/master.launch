@@ -1,6 +1,6 @@
 <launch>
-    <arg name="rviz" default="false"/>
-    <arg name="robot_connected" default="true"/>
+    <arg name="rviz" default="false" doc="wether to start rviz to visualize robot movement"/>
+    <arg name="robot_connected" default="true" doc="wether to start the dynamixel software for the motors"/>
 
 
     <!-- include the main akrobat logic -->

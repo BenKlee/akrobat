@@ -7,72 +7,56 @@ based on ROS.
 
 #### Prerequisites
 
-- Working installation of ros-melodic (follow the installation instructions on [the official ROS website](http://wiki.ros.org/kinetic/Installation/Ubuntu) )
-
-- Install the ROS Kinetic joystick 
-
-```sudo apt-get install ros-kinetic-joy```
+- Working installation of ros-noetic (follow the installation instructions on [the official ROS website](http://wiki.ros.org/noetic/Installation/Ubuntu) )
 
 - Add your user to the dialout group (you need this because the Akrobat is controlled via the USB interface)
 
-```sudo add <youruser> dialout``` 
+`sudo add <youruser> dialout` 
  
 
 #### Steps to get the simulation running
 
 1. Get the repo into your catkin_ws
 
-- ```cd ~/catkin_ws/src/```
+- `cd ~/catkin_ws/src/`
 
-- ```git clone -b <yourbranchname> github.com/informatik-mannheim/akrobat```
+- `git clone -b <yourbranchname> github.com/informatik-mannheim/akrobat`
 
-2. catkin_make your workspace
+2. Install dependencies
 
-- ```cd ~/catkin_ws/```
+- `rosdep install akrobat`
 
-- ```catkin_make```
+3. catkin_make your workspace
 
-3. roslaunch the project with your desired running options
+- `cd ~/catkin_ws/`
+
+- `catkin_make`
+
+4. roslaunch the project with your desired running options
+
+#### Launch Configurations
 
 There are two launch configurations
 
-- ```master.launch```\
+- `master.launch`\
 and
-- ```gazebo.launch```
+- `gazebo.launch`
 
- ```master.launch``` is designed for launching the robot when using the actual physical robot
- ```gazebo.launch``` is designed to launch the robot in the gazebo simulation
+ `master.launch` is designed for launching the robot when using the actual physical robot\
+ `gazebo.launch` is designed to launch the robot in the gazebo simulation
 
-Both launch configurations can be given arguments
-- ```master.launch```
-    - ```rviz```
-        - launches the rviz visualization tool along with the robot
-        - ```default: false```
-    - ```robot_connected```
-        - wether the robot is currently connected to the computer 
-        - ```default: true```
-        - turn off if just testing in rviz
-
-- ```gazebo.launch```
-    - ```world```
-        - the world to launch the robot into in gazebo
-        - ```default: "default"```
-        - when changing from default, make sure there is a ```.world``` file in the ```/worlds``` folder corrensponding to the value you provided
-    - ```gui```
-        - wether to show the gazebo gui
-        - ```default: true```
-        - can be turned off to speed up simulation
-    - ```rviz```
-        - wether to launch rviz
-        - ```default: false```
-        - can be used to visualize the robot when gui is turned off
+Both launch configurations can be given arguments. Run either\
+`roslaunch akrobat gazebo.launch --ros-args`\
+or\
+`roslaunch akrobat gazebo.launch --ros-args`\
+to see their arguments' descriptions and default values
 
 
-For testing purposes without a controller (joystick) available, a joystick emulator has been implemented. To use it run ```rosrun akrobat joystick_emulator``` while the robot is running.
+For testing purposes without a controller (joystick) available, a joystick emulator has been implemented. To use it run `rosrun akrobat joystick_emulator`
 
 
 Troubleshooting:
 
-If you get an error like "[...] in the folder [akrobat] couldn't be found a file [AkrobatMaster.launch] [...]" execute this line:
+If you get an error like "[...] in the folder [akrobat] couldn't be found a file [master.launch] [...]" execute this line:
 
-```echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc```
+`echo "source ~/catkin_ws/devel/setup.bash" >> ~/.bashrc`
