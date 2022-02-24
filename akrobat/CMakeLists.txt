@@ -166,23 +166,23 @@ add_dependencies(translateJoypad akrobat_generate_messages_cpp)
 ## Mark executable scripts (Python etc.) for installation
 ## in contrast to setup.py, you can choose the destination
 install(PROGRAMS
-  scripts/dynamixel_joint_state_publisher
+  nodes/dynamixel_joint_state_publisher
   nodes/smach_example_state_machine.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 catkin_install_python(PROGRAMS
-  scripts/joint_states_to_gazebo.py
+  nodes/joint_states_to_gazebo.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 catkin_install_python(PROGRAMS
-  scripts/joystick_emulator.py
+  nodes/joystick_emulator.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
 catkin_install_python(PROGRAMS
-  scripts/generate_world_file.py
+  nodes/generate_world_file.py
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 
