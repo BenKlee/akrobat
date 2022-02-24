@@ -4,10 +4,10 @@ from sensor_msgs.msg import Joy
 
 pressed = set()
 
-NUMPAD_2_VK = '0x62'
-NUMPAD_8_VK = '0x68'
-NUMPAD_4_VK = '0x64'
-NUMPAD_6_VK = '0x66'
+NUMPAD_2_VK = 0x62
+NUMPAD_8_VK = 0x68
+NUMPAD_4_VK = 0x64
+NUMPAD_6_VK = 0x66
 
 LEFT_JOYSTICK_X = 0
 LEFT_JOYSTICK_Y = 1
@@ -87,16 +87,16 @@ def send_message():
     if keyboard.KeyCode(char='4') in pressed:
         buttons[3] = 1
 
-    if keyboard.KeyCode(vk=int('0x62', 16)) in pressed:
+    if keyboard.KeyCode(vk=NUMPAD_2_VK) in pressed:
         axes[D_PAD_Y] = -1
 
-    if keyboard.KeyCode(vk=int('0x68', 16)) in pressed:
+    if keyboard.KeyCode(vk=NUMPAD_8_VK) in pressed:
         axes[D_PAD_Y] = 1
 
-    if keyboard.KeyCode(vk=int('0x64', 16)) in pressed:
+    if keyboard.KeyCode(vk=NUMPAD_4_VK) in pressed:
         axes[D_PAD_X] = -1
 
-    if keyboard.KeyCode(vk=int('0x66', 16)) in pressed:
+    if keyboard.KeyCode(vk=NUMPAD_6_VK) in pressed:
         axes[D_PAD_X] = 1
 
 
