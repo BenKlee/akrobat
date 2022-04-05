@@ -79,6 +79,9 @@
                 <origin rpy="0 0 0" xyz="0 0 0"/>
             </collision>
         </link>
+
+        <xacro:contact_sensor_plugin link_name="${leg_number}_tibia_link"/>
+
         <joint name="m${leg_number}3" type="revolute">
             <parent link="${leg_number}_femur_link"/>
             <child link="${leg_number}_tibia_link"/>

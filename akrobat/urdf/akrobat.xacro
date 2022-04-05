@@ -10,6 +10,23 @@
 		</plugin>
 	</gazebo>
 
+	<xacro:macro name="contact_sensor_plugin" params="link_name">
+		<gazebo reference="${link_name}">
+
+            <sensor name="${link_name}_contact_sensor" type="contact">
+                <update_rate>10.0</update_rate>
+                <contact>
+                    <collision>${link_name}_collision</collision>
+                </contact>
+
+                <plugin name="${link_name}_contact_sensor_plugin" filename="libgazebo_ros_bumper.so">
+                    <bumperTopicName>leg_${link_name}_contact_sensor_state</bumperTopicName>
+                </plugin>
+
+            </sensor>
+        </gazebo>
+	</xacro:macro>
+
 	<link name="base_link"/>
 	<joint name="base_link_to_akrobat_joint" type="fixed">
 		<parent link="base_link"/>
