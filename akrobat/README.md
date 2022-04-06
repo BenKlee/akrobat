@@ -6,7 +6,7 @@ akrobat
 │     - see documentation (http://wiki.ros.org/catkin/CMakeLists.txt)
 ├── config
 │   ├── akrobat_control.yaml
-│   │         -  config file for ros_gazebo_control
+│   │         -  config file for ros_gazebo_control (http://gazebosim.org/tutorials/?tut=ros_control)
 │   └── dynamixel_params.yaml
 │             - config file for dynamixel
 ├── include
