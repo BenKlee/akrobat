@@ -4,6 +4,7 @@
   <arg name="rviz" default="false" doc="Boolean. Wether to launch rviz alongside gazebo"/>
   <arg name="generate_world" default="false" doc="Boolean. Wether to generate a world file. Requires additional arguments. Run 'roslaunch akrobat generate.launch --ros-args' to see these arguments"/>
   <arg name="world" unless="$(arg generate_world)" default="default" doc="String. The name of a world file in worlds folder to launch. Not used if generate_world is true"/>
+  <arg name="emulate_joystick" default="false" doc="Boolean. Wether or not to start the joystick_emulator.py node"/>
 
   <group if="$(arg generate_world)">
     <arg name="path_is_relative" default="true" doc="Boolean. Declares if the output_path argument is a relative or absolute path"/>
@@ -48,12 +49,12 @@
 
   <node if="$(arg rviz)" name="rviz" pkg="rviz" type="rviz" args="-d $(find akrobat)/rviz/akrobat.rviz" />
 
+  <node if="$(arg emulate_joystick)" name="joystick_emulator" pkg="akrobat" type="joystick_emulator.py"/>
 
   <include file="$(dirname)/include/akrobat.launch">
     <arg name="using_real_robot" value="false"/>
   </include>
 
-  <!-- <node name="foot_contact" pkg="akrobat" type="foot_contact.py"/> -->
 
   <!-- load joint controller configurations from YAML file to parameter server -->
   <rosparam file="$(find akrobat)/config/akrobat_control.yaml" command="load"/>
