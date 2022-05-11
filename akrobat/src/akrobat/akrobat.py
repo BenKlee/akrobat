@@ -409,7 +409,7 @@ class Akrobat:
 
             speed = self.pad.speed
 
-            if abs(speed[X] < abs(speed[Y])):
+            if abs(speed[X]) < abs(speed[Y]):
                 # leg 1 amplitude                                                                   # leg 2 amplitude
                 self.trajectory_data.amplitude_x[enums.Leg.LEFT_FRONT]  = self.trajectory_data.initial_amplitude_x * speed[X]
                 self.trajectory_data.amplitude_x[enums.Leg.RIGHT_FRONT] = self.trajectory_data.initial_amplitude_x * speed[X]
@@ -463,7 +463,9 @@ class Akrobat:
                 self.trajectory_data.amplitude_y[enums.Leg.RIGHT_REAR] = self.trajectory_data.initial_amplitude_y * speed[Y]
                 self.trajectory_data.amplitude_z[enums.Leg.LEFT_REAR]  = self.trajectory_data.initial_amplitude_z * speed[X]
                 self.trajectory_data.amplitude_z[enums.Leg.RIGHT_REAR] = self.trajectory_data.initial_amplitude_z * speed[X]
-            elif speed[X] == 0 and speed[Y] == 0 and speed[Z] != 0:
+
+
+            elif speed[X] == 0 and speed[Y] == 0:
 
                 # leg 1 amplitude                                                                   # leg 2 amplitude
                 self.trajectory_data.amplitude_x[enums.Leg.LEFT_FRONT]  = -self.trajectory_data.initial_amplitude_x * speed[Z]
