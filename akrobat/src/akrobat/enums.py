@@ -1,11 +1,10 @@
 from enum import IntEnum
 
 class Gait(IntEnum):
-    INIT    = -1
+    RESET   = -1
     TRIPOD  = 0
     WAVE    = 1
     RIPPLE  = 2
-    RESET   = 3
 
 
 class Joint(IntEnum):

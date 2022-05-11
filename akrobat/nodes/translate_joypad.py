@@ -74,7 +74,7 @@ if __name__ == '__main__':
 
         movement_publisher = rospy.Publisher('movements', movement, queue_size=1000)
 
-        rate = rospy.Rate(5)
+        rate = rospy.Rate(20)
 
         mode = Mode.navigate
         gait = Gait.TRIPOD
@@ -178,7 +178,10 @@ if __name__ == '__main__':
 
                 # left bumper
                 if buttons[4] == 1:
-                    gait = Gait((gait+1)%len(Gait))
+                    gait_names = Gait._member_names_
+                    gait_index = gait_names.index(gait.name)
+                    new_gait_name = gait_names[(gait_index+1) % len(Gait)]
+                    gait = Gait[new_gait_name]
 
                 # start button
                 if buttons[7] == 1:

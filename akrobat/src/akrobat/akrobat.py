@@ -25,7 +25,7 @@ class Akrobat:
 
 
     def __init__(self) -> None:
-        self.gait = enums.Gait.INIT
+        self.gait = enums.Gait.RESET
         self.body_rotation = 0
         self.rolled_over = False
 
@@ -349,6 +349,7 @@ class Akrobat:
 
             elif movement.walking_mode != self.gait.name.lower():
                 self.gait = enums.Gait[movement.walking_mode.upper()]
+                print(f'Changed gait to {self.gait.name}')
 
                 if self.gait is enums.Gait.TRIPOD:
                     self.trajectory_data.case_step = [1,0,0,1,1,0]
@@ -508,23 +509,24 @@ class Akrobat:
                     self.wave_gait(leg)
 
                 if self.gait is enums.Gait.RIPPLE:
-                    self.ripple_gate(leg)
+                    self.ripple_gait(leg)
 
 
 
                 self.coordinate_transformation(leg)
+
                 foot_present_position = self.leg_coordinate_system.leg[leg].foot_present_position
                 joint_angles = self.leg_coordinate_system.leg[leg].joint_angles
+
                 self.inverse_kinematics(foot_present_position[X], foot_present_position[Y], foot_present_position[Z], leg)
                 self.move_leg(joint_angles.alpha, joint_angles.beta, joint_angles.gamma, leg)
             
-            
-            self.trajectory_data.tick = (self.trajectory_data.tick + 1) % self.trajectory_settings[self.gait].max_ticks
+            if self.gait in (enums.Gait.TRIPOD, enums.Gait.WAVE, enums.Gait.RIPPLE):
+                self.trajectory_data.tick = (self.trajectory_data.tick + 1) % self.trajectory_settings[self.gait].max_ticks
 
             # new loop, move every leg one case step forward
             if self.trajectory_data.tick == 0:
                 for leg in enums.Leg:
-                    # modulo 1 ist immer 0
                     self.trajectory_data.case_step[leg] = (self.trajectory_data.case_step[leg] + 1) % self.trajectory_settings[self.gait].number_of_case_steps
 
 
@@ -541,15 +543,109 @@ class Akrobat:
     
     def tripod_gait(self, leg: enums.Leg):
 
+
         if self.is_moving:
 
-            if self.trajectory_data.case_step[leg] == 0:
-                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = -self.trajectory_data.amplitude_x[leg]     * cos(pi * self.trajectory_data.tick / self.trajectory_settings[enums.Gait.TRIPOD].max_ticks)
-                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = -self.trajectory_data.amplitude_y[leg]     * cos(pi * self.trajectory_data.tick / self.trajectory_settings[enums.Gait.TRIPOD].max_ticks)
-                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = abs(self.trajectory_data.amplitude_z[leg]) * sin(pi * self.trajectory_data.tick / self.trajectory_settings[enums.Gait.TRIPOD].max_ticks)
+            TRIPOD = enums.Gait.TRIPOD
+            case_step = self.trajectory_data.case_step[leg]
+
+            current_tick = self.trajectory_data.tick
+            amplitude = (self.trajectory_data.amplitude_x[leg], self.trajectory_data.amplitude_y[leg], self.trajectory_data.amplitude_z[leg])
+            max_ticks = self.trajectory_settings[TRIPOD].max_ticks
+
+            if case_step == 0:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = -amplitude[X]     * cos(pi * current_tick / max_ticks)
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = -amplitude[Y]     * cos(pi * current_tick / max_ticks)
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = abs(amplitude[Z]) * sin(pi * current_tick / max_ticks)
 
 
-            elif self.trajectory_data.case_step[leg] == 1:
-                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = self.trajectory_data.amplitude_x[leg] - 2 * self.trajectory_data.amplitude_x[leg] * self.trajectory_data.tick / self.trajectory_settings[enums.Gait.TRIPOD].max_ticks
-                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = self.trajectory_data.amplitude_y[leg] - 2 * self.trajectory_data.amplitude_y[leg] * self.trajectory_data.tick / self.trajectory_settings[enums.Gait.TRIPOD].max_ticks
+            elif case_step == 1:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] - 2 * amplitude[X] * current_tick / max_ticks
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] - 2 * amplitude[Y] * current_tick / max_ticks
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+    
+    def wave_gait(self, leg: enums.Leg):
+
+         
+        if self.is_moving:
+
+            WAVE = enums.Gait.WAVE
+            case_step = self.trajectory_data.case_step[leg]
+
+            current_tick = self.trajectory_data.tick
+            amplitude = (self.trajectory_data.amplitude_x[leg], self.trajectory_data.amplitude_y[leg], self.trajectory_data.amplitude_z[leg])
+            max_ticks = self.trajectory_settings[WAVE].max_ticks
+
+            if case_step == 0:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = -amplitude[X]     * cos(pi * current_tick / max_ticks)
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = -amplitude[Y]     * cos(pi * current_tick / max_ticks)
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = abs(amplitude[Z]) * sin(pi * current_tick / max_ticks)
+
+            elif case_step == 1:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * current_tick / (5 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * current_tick / (5 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 2:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * ((current_tick + max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 3:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + 2 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[X] * (1 - 2 * ((current_tick + 2 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 4:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + 3 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[X] * (1 - 2 * ((current_tick + 3 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 5:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + 4 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[X] * (1 - 2 * ((current_tick + 4 * max_ticks) / (5 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+
+    def ripple_gait(self, leg: enums.Leg):
+
+
+        if self.is_moving:
+
+            RIPPLE = enums.Gait.RIPPLE
+            case_step = self.trajectory_data.case_step[leg]
+
+            current_tick = self.trajectory_data.tick
+            amplitude = (self.trajectory_data.amplitude_x[leg], self.trajectory_data.amplitude_y[leg], self.trajectory_data.amplitude_z[leg])
+            max_ticks = self.trajectory_settings[RIPPLE].max_ticks
+
+            if case_step == 0:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = -amplitude[X]     * cos(pi * current_tick / (2 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = -amplitude[Y]     * cos(pi * current_tick / (2 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = abs(amplitude[Z]) * sin(pi * current_tick / (2 * max_ticks))
+
+            elif case_step == 1:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = -amplitude[X]     * cos(pi * (current_tick + max_ticks) / (2 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = -amplitude[Y]     * cos(pi * (current_tick + max_ticks) / (2 * max_ticks))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = abs(amplitude[Z]) * sin(pi * (current_tick + max_ticks) / (2 * max_ticks))
+
+            elif case_step == 2:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * (current_tick / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * (current_tick / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 3:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + max_ticks) / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * ((current_tick + max_ticks) / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 4:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + 2 * max_ticks) / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * ((current_tick + 2 * max_ticks) / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
+
+            elif case_step == 5:
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[X] = amplitude[X] * (1 - 2 * ((current_tick + 3 * max_ticks) / (4 * max_ticks)))
+                self.foot_coordinate_system.leg[leg].trajectory_present_position[Y] = amplitude[Y] * (1 - 2 * ((current_tick + 3 * max_ticks) / (4 * max_ticks)))
                 self.foot_coordinate_system.leg[leg].trajectory_present_position[Z] = 0
