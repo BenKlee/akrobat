@@ -13,12 +13,12 @@
   <include file="$(find akrobat)/launch/include/dynamixel.launch" if="$(arg using_real_robot)" />
 
   <!-- start akrobat walking algorithms -->
-  <node name="akrobat" pkg="akrobat" type="akrobat" output="screen" required="true">
+  <node name="akrobat" pkg="akrobat" type="main.py" output="screen" required="true">
     <remap from="/goal_joint_states" to="/joint_states" unless="$(arg using_real_robot)"/>
   </node>
 
   <!-- start translationNode -->
-  <node name="translateJoypad" pkg="akrobat" type="translateJoypad"></node>
+  <node name="translate_joypad" pkg="akrobat" type="translate_joypad.py"></node>
 
 <!-- start state machine 
   <node name="state_machine" pkg="akrobat" type="smach_example_state_machine.py" output="screen" respawn="true"></node> -->
