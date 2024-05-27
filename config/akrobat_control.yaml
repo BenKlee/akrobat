@@ -1,0 +1,38 @@
+controller_manager:
+  ros__parameters:
+    update_rate: 100  # Hz
+
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
+
+    joint_state_broadcaster:
+      type: joint_state_broadcaster/JointStateBroadcaster
+
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - m11
+      - m12
+      - m13
+      - m21
+      - m22
+      - m23
+      - m31
+      - m32
+      - m33
+      - m41
+      - m42
+      - m43
+      - m51
+      - m52
+      - m53
+      - m61
+      - m62
+      - m63
+
+    command_interfaces:
+      - effort
+    state_interfaces:
+      - position
+      - velocity
+      - effort
