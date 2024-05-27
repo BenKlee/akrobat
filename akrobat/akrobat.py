@@ -4,7 +4,7 @@ import rclpy
 from rclpy.node import Node
 from sensor_msgs.msg import JointState
 from numpy import radians
-from cmath import cos, acos, pi, sin, sqrt, degrees, atan2
+from math import cos, acos, pi, sin, sqrt, degrees, atan2
 
 
 class Gait(Enum):
@@ -84,18 +84,6 @@ class Akrobat(Node):
 
         self.__state_publisher.publish(msg)
 
-    def set_leg_goal_coordiante(self, leg: Leg, coordinate: Coordinate):
-        '''
-        Calculates the joint angles for the given coordinate and leg using inverse kinematics.
-        Sets the joint angles as goal positions for the next publish.
-        '''
-        alpha, beta, gamma = self.__inverse_kinematics(coordinate)
-
-        # TODO coordinate transform to leg coordinate system
-
-        self.__goal_positions[leg.joint_index(Joint.alpha)] = alpha
-        self.__goal_positions[leg.joint_index(Joint.beta)]  = beta
-        self.__goal_positions[leg.joint_index(Joint.gamma)] = gamma
 
     def __inverse_kinematics(self, coordinate: Coordinate):
         '''
@@ -129,6 +117,21 @@ class Akrobat(Node):
 
         return alpha, beta, gamma
 
+    def set_leg_goal_coordiante(self, leg: Leg, coordinate: Coordinate):
+        '''
+        Calculates the joint angles for the given coordinate and leg using inverse kinematics.
+        Sets the joint angles as goal positions for the next publish.
+        '''
+        alpha, beta, gamma = self.__inverse_kinematics(coordinate)
+
+        # TODO coordinate transform to leg coordinate system
+
+        self.__goal_positions[leg.joint_index(Joint.alpha)] = alpha
+        self.__goal_positions[leg.joint_index(Joint.beta)]  = beta
+        self.__goal_positions[leg.joint_index(Joint.gamma)] = gamma
+
+    def run_gait(self, gait: Gait):
+        self.__goal_positions = [0., -0.5, -0.5] * 6
 
 def main(args=None):
     rclpy.init(args=args)
