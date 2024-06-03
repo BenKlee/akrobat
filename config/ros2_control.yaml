@@ -31,8 +31,7 @@ joint_trajectory_controller:
       - m63
 
     command_interfaces:
-      - effort
+      - position
     state_interfaces:
       - position
       - velocity
-      - effort

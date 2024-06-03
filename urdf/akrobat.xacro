@@ -4,13 +4,9 @@
 	<xacro:property name="stl_path_collision" value="file://$(find akrobat)/stl/collision/"/>
 	<xacro:property name="color_grey" value="0.67 0.67 0.67 1"/>
 
-	<gazebo>
-		<plugin filename="libgz_ros2_control-system.so" name="gz_ros2_control::GazeboSimROS2ControlPlugin">
-			<robot_param>robot_description</robot_param>
-			<robot_param_node>robot_state_publisher</robot_param_node>
-			<parameters>$(find akrobat)/config/akrobat_control.yaml</parameters>
-		</plugin>
-	</gazebo>
+	<xacro:arg name="simulation" default="False"/>
+
+	<xacro:include filename="$(find akrobat)/urdf/ros2_control.xacro"/>
 
 	<link name="world"/>
 	<joint name="world_to_akrobat_joint" type="fixed">

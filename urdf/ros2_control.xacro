@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+
+    <xacro:macro name="joints" params="leg_number">
+        <joint name="m${leg_number}1">
+            <xacro:unless value="$(arg simulation)">
+                <param name="id">${leg_number}1</param>
+            </xacro:unless>
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="m${leg_number}2">
+            <xacro:unless value="$(arg simulation)">
+                <param name="id">${leg_number}2</param>
+            </xacro:unless>
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+        <joint name="m${leg_number}3">
+            <xacro:unless value="$(arg simulation)">
+                <param name="id">${leg_number}3</param>
+            </xacro:unless>
+            <command_interface name="position"/>
+            <state_interface name="position"/>
+            <state_interface name="velocity"/>
+        </joint>
+    </xacro:macro>
+
+
+    <xacro:unless value="$(arg simulation)">
+        <ros2_control name="DynamixelSystem" type="system">
+            <hardware>
+                <plugin>dynamixel_hardware/DynamixelHardware</plugin>
+                <param name="usb_port">/dev/ttyUSB0</param>
+                <param name="baud_rate">1000000</param>
+            </hardware>
+            
+            <xacro:joints leg_number="1" />
+            <xacro:joints leg_number="2" />
+            <xacro:joints leg_number="3" />
+            <xacro:joints leg_number="4" />
+            <xacro:joints leg_number="5" />
+            <xacro:joints leg_number="6" />
+        </ros2_control>
+    </xacro:unless>
+
+    <xacro:if value="$(arg simulation)">
+        <ros2_control name="GazeboSystem" type="system">
+            <hardware>
+                <plugin>gazebo_ros2_control/GazeboSystem</plugin>
+            </hardware>
+            
+            <xacro:joints leg_number="1" />
+            <xacro:joints leg_number="2" />
+            <xacro:joints leg_number="3" />
+            <xacro:joints leg_number="4" />
+            <xacro:joints leg_number="5" />
+            <xacro:joints leg_number="6" />
+        </ros2_control>
+    </xacro:if>
+
+    <gazebo>
+        <plugin name="gazebo_ros2_control" filename="libgazebo_ros2_control.so">
+            <parameters>$(find akrobat)/config/ros2_control.yaml</parameters>
+            <parameters>$(find akrobat)/config/ros2_control_gazebo.yaml</parameters>
+        </plugin>
+    </gazebo>
+
+</robot>

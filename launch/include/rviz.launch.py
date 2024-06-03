@@ -13,20 +13,6 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     ld.add_action(Node(
-        package='robot_state_publisher',
-        executable='robot_state_publisher',
-        name='robot_state_publisher',
-        output='screen',
-        parameters=[{
-            'robot_description': ParameterValue(
-                Command(['xacro ', PathJoinSubstitution([FindPackageShare('akrobat'), 'urdf', 'akrobat.xacro'])]),
-                value_type=str
-            )
-        }]
-    ))
-
-    
-    ld.add_action(Node(
         package='rviz2',
         executable='rviz2',
         name='rviz2',
