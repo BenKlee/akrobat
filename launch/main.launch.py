@@ -38,6 +38,7 @@ def generate_launch_description():
         package='controller_manager',
         executable='ros2_control_node',
         parameters=[PathJoinSubstitution([FindPackageShare('akrobat'), 'config', 'ros2_control.yaml'])],
+        remappings=[('/controller_manager/robot_description', '/robot_description')],
         output='screen'
     )
     ld.add_action(controller_manager)
@@ -45,26 +46,26 @@ def generate_launch_description():
     # delay controller spawn until after controller manager is started
     ld.add_action(RegisterEventHandler(
         event_handler=OnProcessStart(
-            target_action=Node(
+            on_start=Node(
                 package='controller_manager',
                 executable='spawner',
                 arguments=['joint_trajectory_controller'],
                 output='screen'
             ),
-            on_start=controller_manager
+            target_action=controller_manager
         )
     ))
 
     # delay controller spawn until after controller manager is started
     ld.add_action(RegisterEventHandler(
         event_handler=OnProcessStart(
-            target_action=Node(
+            on_start=Node(
                 package='controller_manager',
                 executable='spawner',
-                arguments=['joint_state_broadcaster'],
+                arguments=['joint_state_broadcaster', '--controller-manager', '/controller_manager'],
                 output='screen'
             ),
-            on_start=controller_manager
+            target_action=controller_manager
         )
     ))
 

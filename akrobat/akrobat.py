@@ -9,7 +9,6 @@ from sensor_msgs.msg import JointState
 from numpy import radians
 from math import cos, acos, pi, sin, sqrt, degrees, atan2
 from tf2_ros.buffer import Buffer
-from tf2_ros.transform_listener import TransformListener
 from geometry_msgs.msg import Point
 from tf2_geometry_msgs import PointStamped
 
@@ -36,14 +35,14 @@ class Leg(Enum):
 
     def link_frame_name(self, joint: Joint) -> str:
         return f'{self.value}_{joint.name.lower()}_link'
-
+    
     def joint_index(self, joint: Joint):
         '''Takes a joint and returns the index that joint on this leg has in a flat array like in the joint_states array'''
-        return (self-1) * 3 + joint
+        return (self.value-1) * 3 + joint.value
     
     def motor_id(self, joint: Joint):
         '''Takes a joint and returns the motor_id that joint on this leg has'''
-        return self * 10 + joint
+        return self.value * 10 + joint.value + 1
 
     @classmethod
     def amount(leg_enum):
@@ -86,21 +85,17 @@ class Akrobat(Node):
         self.__publish_frequency_Hz = publish_frequency_Hz
         self.__current_gait = initial_gait
         self.__gait_speed = 1
+        self.__robot_frame_name = 'akrobat_link' # TODO get from URDF?
+        self.__tf_buffer = Buffer()
 
         self.__current_positions = None
         '''The most up-to-date positions of the robot joints'''
-
-        self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
-
         self.__goal_positions = [0.,-0.5,-0.5] * Leg.amount()
         '''The desired positions of the robot joints'''
 
-        self.__robot_frame_name = 'akrobat_link' # TODO get from URDF?
-
         self.__state_publisher = self.create_publisher(JointState, 'goal_joint_states', 10)
+        self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
         self.create_timer(1/self.__publish_frequency_Hz, self.__publish_state)
-
-        self.__tf_buffer = Buffer()
 
         asyncio.run(self.run(self.__current_gait))
 
@@ -110,7 +105,7 @@ class Akrobat(Node):
         msg.header.stamp = self.get_clock().now().to_msg()
         msg.header.frame_id = self.__robot_frame_name
 
-        msg.name = [f'm{leg}{joint}' for leg in range(1,7,1) for joint in range(1,4,1)]
+        msg.name = [f'm{leg.motor_id(joint)}' for leg in Leg for joint in Joint]
         msg.position = self.__goal_positions
         msg.velocity = [0.] * 6*3
         msg.effort = [0.] * 6*3
@@ -152,6 +147,22 @@ class Akrobat(Node):
 
         return alpha, beta, gamma
 
+    def __leg_to_akrobat_coordinate_system(self, leg: Leg, coordinate: Coordinate) -> Coordinate:
+        point_message = PointStamped()
+        point_message.header.frame_id = leg.link_frame_name(Link.Coxa)
+        point_message.header.stamp = self.get_clock().now().to_msg()
+        point_message.point = coordinate.to_point()
+        new_point = self.__tf_buffer.transform(point_message, self.__robot_frame_name)
+        return Coordinate.from_point(new_point)
+
+    def __akrobat_to_leg_coordinate_system(self, leg: Leg, coordinate: Coordinate) -> Coordinate:
+        point_message = PointStamped()
+        point_message.header.frame_id = self.__robot_frame_name
+        point_message.header.stamp = self.get_clock().now().to_msg()
+        point_message.point = coordinate.to_point()
+        new_point = self.__tf_buffer.transform(point_message, leg.link_frame_name(Link.Coxa))
+        return Coordinate.from_point(new_point)
+
     def set_leg_goal_coordiante(self, leg: Leg, coordinate: Coordinate) -> None:
         '''
         Calculates the joint angles for the given coordinate and leg using inverse kinematics.
@@ -164,24 +175,6 @@ class Akrobat(Node):
         self.__goal_positions[leg.joint_index(Joint.alpha)] = alpha
         self.__goal_positions[leg.joint_index(Joint.beta)]  = beta
         self.__goal_positions[leg.joint_index(Joint.gamma)] = gamma
-
-    def __leg_to_akrobat_coordinate_system(self, leg: Leg, coordinate: Coordinate) -> Coordinate:
-        point_message = PointStamped()
-        point_message.header.frame_id = leg.link_frame_name(Link.Coxa)
-        point_message.header.stamp = self.get_clock().now().to_msg()
-        point_message.point = coordinate.to_point()
-        new_point = self.__tf_buffer.transform(point_message, self.__robot_frame_name)
-        return Coordinate.from_point(new_point)
-
-
-    def __akrobat_to_leg_coordinate_system(self, leg: Leg, coordinate: Coordinate) -> Coordinate:
-        point_message = PointStamped()
-        point_message.header.frame_id = self.__robot_frame_name
-        point_message.header.stamp = self.get_clock().now().to_msg()
-        point_message.point = coordinate.to_point()
-        new_point = self.__tf_buffer.transform(point_message, leg.link_frame_name(Link.Coxa))
-        return Coordinate.from_point(new_point)
-
 
     async def run(self, initial_gait: Gait):
         while self.__current_positions is None:
