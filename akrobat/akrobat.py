@@ -6,6 +6,7 @@ import rclpy
 from rclpy.node import Node
 import rclpy.time
 from sensor_msgs.msg import JointState
+from std_msgs.msg import Float64MultiArray, MultiArrayDimension
 from numpy import radians
 from math import cos, acos, pi, sin, sqrt, degrees, atan2
 from tf2_ros.buffer import Buffer
@@ -84,7 +85,8 @@ class Akrobat(Node):
 
         self.__publish_frequency_Hz = publish_frequency_Hz
         self.__current_gait = initial_gait
-        self.__gait_speed = 1
+        self.__gait_update_frquency_Hz = 10
+        self.__gait_speed_modifier = 1
         self.__robot_frame_name = 'akrobat_link' # TODO get from URDF?
         self.__tf_buffer = Buffer()
 
@@ -93,23 +95,29 @@ class Akrobat(Node):
         self.__goal_positions = [0.,-0.5,-0.5] * Leg.amount()
         '''The desired positions of the robot joints'''
 
-        self.__state_publisher = self.create_publisher(JointState, 'goal_joint_states', 10)
+        self.__state_publisher = self.create_publisher(Float64MultiArray, 'joint_position_controller/commands', 10)
         self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
         self.create_timer(1/self.__publish_frequency_Hz, self.__publish_state)
+        self.__run_timer = self.create_timer((60/self.__gait_update_frquency_Hz)/self.__gait_speed_modifier, self.run)
 
-        asyncio.run(self.run(self.__current_gait))
+    @property
+    def gait_speed_modifier(self):
+        '''
+        How fast or slow to run the current gait.
+        '''
+        return self.__gait_speed_modifier
+    
+    @gait_speed_modifier.setter
+    def gait_speed_modifier(self, value):
+        # TODO handle value == 0
+        self.__gait_speed_modifier = value
+        period_sec = (60/self.__gait_update_frquency_Hz)/self.__gait_speed_modifier
+        period_ns = period_sec / (1000**3)
+        self.__run_timer.timer_period_ns = period_ns
 
     def __publish_state(self):
-        msg = JointState()
-
-        msg.header.stamp = self.get_clock().now().to_msg()
-        msg.header.frame_id = self.__robot_frame_name
-
-        msg.name = [f'm{leg.motor_id(joint)}' for leg in Leg for joint in Joint]
-        msg.position = self.__goal_positions
-        msg.velocity = [0.] * 6*3
-        msg.effort = [0.] * 6*3
-
+        msg = Float64MultiArray()
+        msg.data = self.__goal_positions
         self.__state_publisher.publish(msg)
 
     def __update_positions(self, joint_state: JointState):
@@ -176,16 +184,16 @@ class Akrobat(Node):
         self.__goal_positions[leg.joint_index(Joint.beta)]  = beta
         self.__goal_positions[leg.joint_index(Joint.gamma)] = gamma
 
-    async def run(self, initial_gait: Gait):
-        while self.__current_positions is None:
+    def run(self):
+        if self.__current_positions is None:
             self.get_logger().warn('not received any joint_states from robot/sim yet')
-            time.sleep(.5)
-
+            return
         
         # for leg in Leg:
         #     self.set_leg_goal_coordiante(leg, Coordinate(0, .30 if leg.value % 2 == 0 else -.30, leg.value/10 - .3))
 
-        self.__goal_positions = [0., -0.5, -0.5]*6
+        # self.__goal_positions = [0., -0.5, -0.5]*6
+        self.__goal_positions = [0.]*3*6
 
 
 def main(args=None):

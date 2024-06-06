@@ -34,7 +34,7 @@ def generate_launch_description():
                 Command(['xacro ', PathJoinSubstitution([FindPackageShare('akrobat'), 'urdf', 'akrobat.xacro']), ' simulation:=True']),
                 value_type=str
             ),
-            'use_sim_time': True
+            'use_sim_time': ParameterValue(True, value_type=bool)
         }
         ]
     ))
@@ -51,6 +51,7 @@ def generate_launch_description():
         launch_description_source=PythonLaunchDescriptionSource(
             launch_file_path=PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gazebo.launch.py'])
         ),
+        launch_arguments={'pause': 'true'}.items(),
         condition=UnlessCondition(LaunchConfiguration('run_headless'))
     ))
 
@@ -58,14 +59,15 @@ def generate_launch_description():
         package='gazebo_ros',
         executable='spawn_entity.py',
         arguments=['-topic', 'robot_description',
-                   '-entity', 'akrobat'],
+                   '-entity', 'akrobat',
+                   '-z', '2'],
         output='screen'
     ))
 
     ld.add_action(Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_trajectory_controller'],
+        arguments=['joint_position_controller'],
         output='screen'
     ))
 

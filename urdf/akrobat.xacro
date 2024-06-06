@@ -8,11 +8,6 @@
 
 	<xacro:include filename="$(find akrobat)/urdf/ros2_control.xacro"/>
 
-	<link name="world"/>
-	<joint name="world_to_akrobat_joint" type="fixed">
-		<parent link="world"/>
-		<child link="akrobat_link"/>
-	</joint>
 	<link name="akrobat_link">
 		<visual>
 			<geometry>

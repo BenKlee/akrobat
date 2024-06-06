@@ -12,10 +12,10 @@
 					<color rgba="${color_grey}"/>
 				</material>
 			</visual>
-				<inertial>
-					<mass value="0.2"/>
-					<inertia ixx="4.99231E-05" ixy="7.69231E-08" ixz="0" iyy="4.83846E-05" iyz="0" izz="4.83846E-05"/>
-				</inertial>
+			<inertial>
+				<mass value="0.2"/>
+				<inertia ixx="4.99231E-05" ixy="7.69231E-08" ixz="0" iyy="4.83846E-05" iyz="0" izz="4.83846E-05"/>
+			</inertial>
 			<collision>
 				<geometry>
 					<mesh filename="${stl_path_collision}coxa_l_link.stl"/>
