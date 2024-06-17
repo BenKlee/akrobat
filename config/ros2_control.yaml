@@ -2,8 +2,8 @@ controller_manager:
   ros__parameters:
     update_rate: 100  # Hz
 
-    # joint_trajectory_controller:
-    #   type: joint_trajectory_controller/JointTrajectoryController
+    joint_trajectory_controller:
+      type: joint_trajectory_controller/JointTrajectoryController
 
     joint_position_controller:
       type: position_controllers/JointGroupPositionController
@@ -11,7 +11,35 @@ controller_manager:
     joint_state_broadcaster:
       type: joint_state_broadcaster/JointStateBroadcaster
 
-# joint_trajectory_controller:
+joint_trajectory_controller:
+  ros__parameters:
+    joints:
+      - m11
+      - m12
+      - m13
+      - m21
+      - m22
+      - m23
+      # - m31
+      # - m32
+      # - m33
+      # - m41
+      # - m42
+      # - m43
+      # - m51
+      # - m52
+      # - m53
+      # - m61
+      # - m62
+      # - m63
+
+    command_interfaces:
+      - position
+    state_interfaces:
+      - position
+      - velocity
+
+      
 joint_position_controller:
   ros__parameters:
     joints:
@@ -21,58 +49,21 @@ joint_position_controller:
       - m21
       - m22
       - m23
-      - m31
-      - m32
-      - m33
-      - m41
-      - m42
-      - m43
-      - m51
-      - m52
-      - m53
-      - m61
-      - m62
-      - m63
+      # - m31
+      # - m32
+      # - m33
+      # - m41
+      # - m42
+      # - m43
+      # - m51
+      # - m52
+      # - m53
+      # - m61
+      # - m62
+      # - m63
 
     command_interfaces:
       - position
     state_interfaces:
       - position
       - velocity
-
-    # m11:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m12:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m13:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m21:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m22:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m23:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m31:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m32:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m33:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m41:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m42:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m43:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m51:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m52:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m53:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m61:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m62:
-    #   pid: {p: 10.0, i: 0.0, d: 0}
-    # m63:
-    #   pid: {p: 10.0, i: 0.0, d: 0}

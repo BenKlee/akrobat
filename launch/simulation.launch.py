@@ -1,7 +1,7 @@
 from launch import LaunchDescription
 from launch.conditions import IfCondition, UnlessCondition
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command, NotSubstitution
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch_ros.actions import Node
@@ -13,15 +13,48 @@ def generate_launch_description():
     ld = LaunchDescription()
 
     ld.add_action(DeclareLaunchArgument(
-        'run_headless',
+        'headless',
         default_value='False',
         description='wether to launch gazebo without gui (headless)'
+    ))
+
+    ld.add_action(DeclareLaunchArgument(
+        'start_paused',
+        default_value='false',
+        description='wether to launch gazebo with paused physics'
     ))
 
     ld.add_action(DeclareLaunchArgument(
         'rviz',
         default_value='False',
         description='wether to launch rviz alongside for visualization'
+    ))
+
+    ld.add_action(IncludeLaunchDescription(
+        PythonLaunchDescriptionSource(
+            PathJoinSubstitution([
+                FindPackageShare('gazebo_ros'),
+                'launch',
+                'gazebo.launch.py'
+            ])
+        ),
+        launch_arguments={
+            'gui': NotSubstitution(LaunchConfiguration('headless')),
+            'pause': LaunchConfiguration('start_paused')
+        }.items(),
+    ))
+
+    ld.add_action(IncludeLaunchDescription(
+        launch_description_source=PythonLaunchDescriptionSource(
+            launch_file_path=PathJoinSubstitution([FindPackageShare('akrobat'), 'launch', 'include', 'rviz.launch.py'])
+        ),
+        condition=IfCondition(LaunchConfiguration('rviz'))
+    ))
+
+    ld.add_action(Node(
+        package='akrobat',
+        executable='akrobat',
+        output='screen'
     ))
 
     ld.add_action(Node(
@@ -35,24 +68,7 @@ def generate_launch_description():
                 value_type=str
             ),
             'use_sim_time': ParameterValue(True, value_type=bool)
-        }
-        ]
-    ))
-
-    ld.add_action(IncludeLaunchDescription(
-        launch_description_source=PythonLaunchDescriptionSource(
-            launch_file_path=PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gazebo.launch.py'])
-        ),
-        launch_arguments=[('gui:=False')],
-        condition=IfCondition(LaunchConfiguration('run_headless'))
-    ))
-
-    ld.add_action(IncludeLaunchDescription(
-        launch_description_source=PythonLaunchDescriptionSource(
-            launch_file_path=PathJoinSubstitution([FindPackageShare('gazebo_ros'), 'launch', 'gazebo.launch.py'])
-        ),
-        launch_arguments={'pause': 'true'}.items(),
-        condition=UnlessCondition(LaunchConfiguration('run_headless'))
+        }]
     ))
 
     ld.add_action(Node(
@@ -67,28 +83,15 @@ def generate_launch_description():
     ld.add_action(Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_position_controller'],
+        arguments=['joint_position_controller', '--controller-manager-timeout', ' 30'],
         output='screen'
     ))
 
     ld.add_action(Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_state_broadcaster'],
+        arguments=['joint_state_broadcaster', '--controller-manager-timeout', ' 30'],
         output='screen'
-    ))
-
-    ld.add_action(Node(
-        package='akrobat',
-        executable='akrobat',
-        output='screen'
-    ))
-
-    ld.add_action(IncludeLaunchDescription(
-        launch_description_source=PythonLaunchDescriptionSource(
-            launch_file_path=PathJoinSubstitution([FindPackageShare('akrobat'), 'launch', 'include', 'rviz.launch.py'])
-        ),
-        condition=IfCondition(LaunchConfiguration('rviz'))
     ))
 
     return ld

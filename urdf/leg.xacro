@@ -1,0 +1,98 @@
+<?xml version="1.0"?>
+
+<robot xmlns:xacro="http://ros.org/wiki/xacro">
+	<xacro:macro name="leg" params="leg_number">
+
+		<xacro:property name="is_right_leg" value="${leg_number%2 == 0}"/>
+		<xacro:property name="z_rotation" value="${pi/2 if is_right_leg else -pi/2}"/>
+
+		<xacro:macro name="link" params="link_name">
+			<link name="${leg_number}_${link_name}">
+				<visual>
+					<geometry>
+						<mesh filename="${stl_path_visual}${link_name}.stl"/>
+					</geometry>
+					<origin rpy="0 0 ${z_rotation}" xyz="0 0 0"/>
+					<material name="grey">
+						<color rgba="${color_grey}"/>
+					</material>
+				</visual>
+				<inertial>
+					<mass value="0.2"/>
+					<inertia ixx="${inertia[link_name]['ixx']}" ixy="${inertia[link_name]['ixy']}" ixz="${inertia[link_name]['ixz']}" iyy="${inertia[link_name]['iyy']}" iyz="${inertia[link_name]['iyz']}" izz="${inertia[link_name]['izz']}" />
+				</inertial>
+				<collision>
+					<geometry>
+						<mesh filename="${stl_path_collision}${link_name}.stl"/>
+					</geometry>
+					<origin rpy="0 0 ${z_rotation}" xyz="0 0 0"/>
+				</collision>
+			</link>
+		</xacro:macro>
+		
+		<xacro:link link_name="coxa_link"/>
+		<xacro:link link_name="femur_link"/>
+		<xacro:link link_name="tibia_link"/>
+
+		<link name="${leg_number}_foot_link" />
+
+
+		<joint name="m${leg_number}1" type="revolute">
+			<parent link="akrobat_link"/>
+			<child link="${leg_number}_coxa_link"/>
+			<xacro:if value="${is_right_leg}">
+				<origin xyz="${(leg_number-4)/2*-0.217} 0.051 0" rpy="0 0 0"/>
+				<axis xyz="0 0 -1"/>
+			</xacro:if>
+			<xacro:unless value="${is_right_leg}">
+				<origin xyz="${(leg_number-3)/2*-0.217} -0.051 0" rpy="0 0 0"/>
+				<axis xyz="0 0 1"/>
+			</xacro:unless>
+			<limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+		</joint>
+
+
+		<joint name="m${leg_number}2" type="revolute">
+			<parent link="${leg_number}_coxa_link"/>
+			<child link="${leg_number}_femur_link"/>
+			<xacro:if value="${is_right_leg}">
+				<origin xyz="0 0.072 0" rpy="0 0 0"/>
+				<axis xyz="-1 0 0"/>
+			</xacro:if>
+			<xacro:unless value="${is_right_leg}">
+				<origin xyz="0 -0.072 0" rpy="0 0 0"/>
+				<axis xyz="1 0 0"/>
+			</xacro:unless>
+			<limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+		</joint>
+
+
+		<joint name="m${leg_number}3" type="revolute">
+			<parent link="${leg_number}_femur_link"/>
+			<child link="${leg_number}_tibia_link"/>
+			<xacro:if value="${is_right_leg}">
+				<origin xyz="0 0.096 0" rpy="0 0 0"/>
+				<axis xyz="-1 0 0"/>
+			</xacro:if>
+			<xacro:unless value="${is_right_leg}">
+				<origin xyz="0 -0.096 0" rpy="0 0 0"/>
+				<axis xyz="1 0 0"/>
+			</xacro:unless>
+			<limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
+		</joint>
+
+		<joint name="${leg_number}_foot_joint" type="fixed">
+			<parent link="${leg_number}_tibia_link" />
+			<child link="${leg_number}_foot_link" />
+			<xacro:if value="${is_right_leg}">
+				<origin xyz="0 .162 0" rpy="0 0 0"/>
+			</xacro:if>
+			<xacro:unless value="${is_right_leg}">
+				<origin xyz="0 -.162 0" rpy="0 0 0"/>
+			</xacro:unless>
+			<origin xyz="-.162 0 0" rpy="0 0 0" />
+		</joint>
+
+	</xacro:macro>
+
+</robot>

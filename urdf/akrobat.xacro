@@ -4,6 +4,9 @@
 	<xacro:property name="stl_path_collision" value="file://$(find akrobat)/stl/collision/"/>
 	<xacro:property name="color_grey" value="0.67 0.67 0.67 1"/>
 
+	<xacro:property name="inertia_yaml" value="$(find akrobat)/urdf/inertia.yaml" />
+	<xacro:property name="inertia" value="${xacro.load_yaml(inertia_yaml)}" />
+
 	<xacro:arg name="simulation" default="False"/>
 
 	<xacro:include filename="$(find akrobat)/urdf/ros2_control.xacro"/>
@@ -13,7 +16,7 @@
 			<geometry>
 				<mesh filename="${stl_path_visual}hexapod_link.stl"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<origin rpy="0 0 ${pi/2}" xyz="0 0 0"/>
 			<material name="grey">
 				<color rgba="${color_grey}"/>
 			</material>
@@ -26,18 +29,17 @@
 			<geometry>
 				<mesh filename="${stl_path_collision}hexapod_link.stl"/>
 			</geometry>
-			<origin rpy="0 0 0" xyz="0 0 0"/>
+			<origin rpy="0 0 0" xyz="0 0 ${pi/2}"/>
 		</collision>
 	</link>
 
-	<xacro:include filename="$(find akrobat)/urdf/left_leg.xacro"/>
-	<xacro:include filename="$(find akrobat)/urdf/right_leg.xacro"/>
+	<xacro:include filename="$(find akrobat)/urdf/leg.xacro"/>
 
-	<xacro:left_leg leg_number="2" />
-	<xacro:left_leg leg_number="4" />
-	<xacro:left_leg leg_number="6" />
-	<xacro:right_leg leg_number="1" />
-	<xacro:right_leg leg_number="3" />
-	<xacro:right_leg leg_number="5" />
+	<xacro:leg leg_number="1" />
+	<xacro:leg leg_number="2" />
+	<xacro:leg leg_number="3" />
+	<xacro:leg leg_number="4" />
+	<xacro:leg leg_number="5" />
+	<xacro:leg leg_number="6" />
 
 </robot>

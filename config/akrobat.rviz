@@ -7,8 +7,11 @@ Panels:
         - /Global Options1
         - /Status1
         - /RobotModel1
+        - /RobotModel1/Links1
+        - /TF1
+        - /TF1/Frames1
       Splitter Ratio: 0.5
-    Tree Height: 555
+    Tree Height: 565
   - Class: rviz_common/Selection
     Name: Selection
   - Class: rviz_common/Tool Properties
@@ -103,12 +106,12 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         3_femur_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         3_foot_link:
           Alpha: 1
           Show Axes: false
@@ -117,17 +120,17 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         4_coxa_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         4_femur_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         4_foot_link:
           Alpha: 1
           Show Axes: false
@@ -136,17 +139,17 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         5_coxa_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         5_femur_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         5_foot_link:
           Alpha: 1
           Show Axes: false
@@ -155,17 +158,17 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         6_coxa_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         6_femur_link:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
+          Value: false
         6_foot_link:
           Alpha: 1
           Show Axes: false
@@ -174,8 +177,8 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        All Links Enabled: true
+          Value: false
+        All Links Enabled: false
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
@@ -184,11 +187,7 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
-          Value: true
-        world:
-          Alpha: 1
-          Show Axes: false
-          Show Trail: false
+          Value: false
       Mass Properties:
         Inertia: false
         Mass: false
@@ -198,19 +197,99 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz_default_plugins/TF
-      Enabled: false
+      Enabled: true
       Frame Timeout: 15
       Frames:
-        All Enabled: true
+        1_coxa_link:
+          Value: true
+        1_femur_link:
+          Value: true
+        1_foot_link:
+          Value: true
+        1_tibia_link:
+          Value: true
+        2_coxa_link:
+          Value: true
+        2_femur_link:
+          Value: true
+        2_foot_link:
+          Value: true
+        2_tibia_link:
+          Value: true
+        3_coxa_link:
+          Value: false
+        3_femur_link:
+          Value: false
+        3_foot_link:
+          Value: false
+        3_tibia_link:
+          Value: false
+        4_coxa_link:
+          Value: false
+        4_femur_link:
+          Value: false
+        4_foot_link:
+          Value: false
+        4_tibia_link:
+          Value: false
+        5_coxa_link:
+          Value: false
+        5_femur_link:
+          Value: false
+        5_foot_link:
+          Value: false
+        5_tibia_link:
+          Value: false
+        6_coxa_link:
+          Value: false
+        6_femur_link:
+          Value: false
+        6_foot_link:
+          Value: false
+        6_tibia_link:
+          Value: false
+        All Enabled: false
+        akrobat_link:
+          Value: false
       Marker Scale: 0.25
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        akrobat_link:
+          1_coxa_link:
+            1_femur_link:
+              1_tibia_link:
+                1_foot_link:
+                  {}
+          2_coxa_link:
+            2_femur_link:
+              2_tibia_link:
+                2_foot_link:
+                  {}
+          3_coxa_link:
+            3_femur_link:
+              3_tibia_link:
+                3_foot_link:
+                  {}
+          4_coxa_link:
+            4_femur_link:
+              4_tibia_link:
+                4_foot_link:
+                  {}
+          5_coxa_link:
+            5_femur_link:
+              5_tibia_link:
+                5_foot_link:
+                  {}
+          6_coxa_link:
+            6_femur_link:
+              6_tibia_link:
+                6_foot_link:
+                  {}
       Update Interval: 0
-      Value: false
+      Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -257,33 +336,33 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.5880119800567627
+      Distance: 1.0512431859970093
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0
-        Y: 0
-        Z: 0
+        X: 0.1184752881526947
+        Y: 0.013636806979775429
+        Z: -0.1241598129272461
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.7153981924057007
+      Pitch: 0.6253982186317444
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 0.4403977394104004
+      Yaw: 0.2303992509841919
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 846
+  Height: 856
   Hide Left Dock: false
   Hide Right Dock: true
-  QMainWindow State: 000000ff00000000fd000000040000000000000181000002b4fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b000002b4000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000002b4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b000002b4000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000039b0000003efc0100000002fb0000000800540069006d006501000000000000039b0000025300fffffffb0000000800540069006d0065010000000000000450000000000000000000000214000002b400000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd000000040000000000000181000002befc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005c00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003b000002be000000c700fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000002b4fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073000000003b000002b4000000a000fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e10000019700000003000005230000003efc0100000002fb0000000800540069006d00650100000000000005230000025300fffffffb0000000800540069006d006501000000000000045000000000000000000000039c000002be00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Selection:
     collapsed: false
   Time:
@@ -292,6 +371,6 @@ Window Geometry:
     collapsed: false
   Views:
     collapsed: true
-  Width: 923
-  X: 135
-  Y: 42
+  Width: 1315
+  X: 200
+  Y: 57
