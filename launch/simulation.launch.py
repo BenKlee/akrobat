@@ -83,7 +83,7 @@ def generate_launch_description():
     ld.add_action(Node(
         package='controller_manager',
         executable='spawner',
-        arguments=['joint_position_controller', '--controller-manager-timeout', ' 30'],
+        arguments=['joint_trajectory_controller', '--controller-manager-timeout', ' 30'],
         output='screen'
     ))
 
