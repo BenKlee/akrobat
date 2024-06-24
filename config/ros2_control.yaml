@@ -20,47 +20,18 @@ joint_trajectory_controller:
       - m21
       - m22
       - m23
-      # - m31
-      # - m32
-      # - m33
-      # - m41
-      # - m42
-      # - m43
-      # - m51
-      # - m52
-      # - m53
-      # - m61
-      # - m62
-      # - m63
-
-    command_interfaces:
-      - position
-    state_interfaces:
-      - position
-      - velocity
-
-      
-joint_position_controller:
-  ros__parameters:
-    joints:
-      - m11
-      - m12
-      - m13
-      - m21
-      - m22
-      - m23
-      # - m31
-      # - m32
-      # - m33
-      # - m41
-      # - m42
-      # - m43
-      # - m51
-      # - m52
-      # - m53
-      # - m61
-      # - m62
-      # - m63
+      - m31
+      - m32
+      - m33
+      - m41
+      - m42
+      - m43
+      - m51
+      - m52
+      - m53
+      - m61
+      - m62
+      - m63
 
     command_interfaces:
       - position
