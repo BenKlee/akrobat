@@ -39,6 +39,7 @@ def generate_launch_description():
         executable='ros2_control_node',
         parameters=[PathJoinSubstitution([FindPackageShare('akrobat'), 'config', 'ros2_control.yaml'])],
         remappings=[('/controller_manager/robot_description', '/robot_description')],
+        # arguments=['--ros-args', '--log-level', 'debug'],
         output='screen'
     )
     ld.add_action(controller_manager)

@@ -9,7 +9,6 @@
             </xacro:unless>
             <command_interface name="position"/>
             <state_interface name="position"/>
-            <state_interface name="velocity"/>
         </joint>
         <joint name="m${leg_number}2">
             <xacro:unless value="$(arg simulation)">
@@ -17,7 +16,6 @@
             </xacro:unless>
             <command_interface name="position"/>
             <state_interface name="position"/>
-            <state_interface name="velocity"/>
         </joint>
         <joint name="m${leg_number}3">
             <xacro:unless value="$(arg simulation)">
@@ -25,7 +23,6 @@
             </xacro:unless>
             <command_interface name="position"/>
             <state_interface name="position"/>
-            <state_interface name="velocity"/>
         </joint>
     </xacro:macro>
 
