@@ -119,10 +119,8 @@ class Akrobat(Node):
         self.__gait_toggle = True
         self.__gait_granularity = 15
 
-        self.__state_publisher = self.create_publisher(Float64MultiArray, 'joint_position_controller/commands', 10)
         self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
-        self.create_timer(1/self.__publish_frequency_Hz, self.__publish_state)
-        self.__run_timer = self.create_timer(self.__gait_base_period_seconds/2, self.run)
+        self.__run_timer = self.create_timer(self.__gait_base_period_seconds/2, self.tripod)
         self.create_subscription(PointStamped, 'goal_point', self.__set_goal_point, 10)
 
         self.__joint_trajectory_publisher = self.create_publisher(JointTrajectory, '/joint_trajectory_controller/joint_trajectory', 10)
@@ -145,11 +143,6 @@ class Akrobat(Node):
         period_sec = self.__gait_period_time / self.__gait_speed_modifier
         period_ns = period_sec / (1000**3)
         self.__run_timer.timer_period_ns = period_ns
-
-    def __publish_state(self):
-        msg = Float64MultiArray()
-        msg.data = self.__goal_positions
-        self.__state_publisher.publish(msg)
 
     def __update_positions(self, joint_state: JointState):
         self.__current_positions = joint_state.position
