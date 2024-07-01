@@ -42,11 +42,11 @@
 			<child link="${leg_number}_coxa_link"/>
 			<xacro:if value="${is_right_leg}">
 				<origin xyz="${(leg_number-4)/2*-0.217} 0.051 0" rpy="0 0 0"/>
-				<axis xyz="0 0 1"/>
+				<axis xyz="0 0 -1"/>
 			</xacro:if>
 			<xacro:unless value="${is_right_leg}">
 				<origin xyz="${(leg_number-3)/2*-0.217} -0.051 0" rpy="0 0 0"/>
-				<axis xyz="0 0 1"/>
+				<axis xyz="0 0 -1"/>
 			</xacro:unless>
 			<limit effort="1000.0" lower="-3.14" upper="3.14" velocity="0.5"/>
 		</joint>

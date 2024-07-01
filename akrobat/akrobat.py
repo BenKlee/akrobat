@@ -229,6 +229,7 @@ class Akrobat(Node):
             for leg in Leg:
 
                 y = .19
+                is_left_leg = leg.value%2 == 1
                 
                 if leg in return_stroke:
                     x = .05 * -cos(pi * time_step / self.__gait_granularity)
@@ -237,7 +238,7 @@ class Akrobat(Node):
                     x = .05 - 2 * .05 * time_step / self.__gait_granularity
                     z = -.145
 
-                alpha, beta, gamma = self.__inverse_kinematics(Point(x=x, y=y, z=z))
+                alpha, beta, gamma = self.__inverse_kinematics(Point(x=x if is_left_leg else -x, y=y, z=z))
 
                 positions[leg.joint_index(Joint.alpha)] = alpha
                 positions[leg.joint_index(Joint.beta)] = beta
