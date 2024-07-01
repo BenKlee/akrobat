@@ -9,8 +9,8 @@
 
   <build_depend>ros2_control</build_depend>
   <build_depend>ros2_controllers</build_depend>
-  <build_depend>gazebo_ros2_control</build_depend>
-  <build_depend>gazebo_ros_pkgs</build_depend>
+  <build_depend>ign_ros2_control</build_depend>
+  <build_depend>ros_gz</build_depend>
 
 
   <exec_depend>ros2launch</exec_depend>
