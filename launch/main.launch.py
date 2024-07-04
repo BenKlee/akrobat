@@ -21,6 +21,12 @@ def generate_launch_description():
         description='wether to launch rviz alongside for visualization'
     ))
 
+    ld.add_action(IncludeLaunchDescription(
+        launch_description_source=PythonLaunchDescriptionSource(
+            launch_file_path=PathJoinSubstitution([FindPackageShare('royale_in_ros2'), 'launch', 'camera_driver.launch.py'])
+        )
+    ))
+
     ld.add_action(Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
