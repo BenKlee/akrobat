@@ -28,8 +28,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            f'akrobat = {package_name}.akrobat:main',
-            f'joint_states_to_gazebo = {package_name}.joint_states_to_gazebo:main'
+            f'akrobat = {package_name}.akrobat:main'
         ],
     },
 )
