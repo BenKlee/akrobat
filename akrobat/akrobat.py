@@ -1,100 +1,24 @@
-from collections import namedtuple
-from enum import Enum
-
 import rclpy
 import rclpy.duration
+from rclpy.duration import S_TO_NS
 import rclpy.time
 from rclpy.node import Node
-from rclpy.action import ActionClient
 
-
-from numpy import radians
-from math import cos, acos, pi, sin, sqrt, degrees, atan2
+import tf2_ros
 from tf2_ros.buffer import Buffer
 from tf2_ros.transform_listener import TransformListener
-import tf2_ros
-from rclpy.duration import S_TO_NS
+
+from numpy import radians
+from math import cos, acos, pi, sin, sqrt, atan2
 
 from builtin_interfaces.msg import Duration
-from std_msgs.msg import Float64MultiArray, Header, String
+from std_msgs.msg import String
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
-from geometry_msgs.msg import Point, Transform
+from geometry_msgs.msg import Point
 from tf2_geometry_msgs import PointStamped
 from sensor_msgs.msg import JointState
-from control_msgs.action import FollowJointTrajectory
 
-class Gait(Enum):
-    T_POSE  = 't_pose'
-    TRIPOD  = 'tripod'
-    WAVE    = 'wave'
-    RIPPLE  = 'ripple'
-
-
-class Joint(Enum):
-    base_to_coxa    = alpha = 0
-    coxa_to_femur   = beta  = 1
-    femur_to_tibia  = gamma = 2
-
-    @classmethod
-    def amount_per_leg(cls):
-        return len(cls)
-
-
-class Link(Enum):
-    Coxa    = 0
-    Femur   = 1
-    Tibia   = 2
-    Foot    = 3
-
-    @property
-    def length(self):
-        '''Length in Meters'''
-        return self.lengths()[self.value]
-
-    @classmethod
-    def lengths(cls):
-        return [.072, .092, .162]
-
-
-class Leg(Enum):
-    LEFT_FRONT      = 1
-    RIGHT_FRONT     = 2
-    LEFT_MIDDLE     = 3
-    RIGHT_MIDDLE    = 4
-    LEFT_REAR       = 5
-    RIGHT_REAR      = 6
-
-    def frame_id(self, link: Link) -> str:
-        return f'{self.value}_{link.name.lower()}_link'
-    
-    def joint_index(self, joint: Joint):
-        '''Takes a joint and returns the index that joint on this leg has in a flat array like in the joint_states array'''
-        return (self.value-1) * 3 + joint.value
-    
-    def motor_id(self, joint: Joint):
-        '''Takes a joint and returns the motor_id that joint on this leg has'''
-        return self.value * 10 + joint.value + 1
-
-    @classmethod
-    def amount(cls):
-        '''Returns the amount of legs'''
-        return len(cls)
-
-
-CoordinateBase = namedtuple('Coordinate', ['x', 'y', 'z'])
-
-class Coordinate(CoordinateBase):
-    '''3-dimensional Coordinate in Meters'''
-
-    
-    @classmethod
-    def from_point(cls, point: Point) -> 'Coordinate':
-        return cls(point.x, point.y, point.z)
-
-    def to_point(self) -> Point:
-        point = Point()
-        point.x, point.y, point.z = [float(val) for val in self]
-        return point
+from akrobat.enums import *
 
 
 class Akrobat(Node):
@@ -105,7 +29,6 @@ class Akrobat(Node):
         self.__current_gait = initial_gait
         self.__gait_base_period_seconds = 2
         self.__gait_speed_modifier = 1
-        self.__robot_frame_name = 'akrobat_link' # TODO get from URDF?
         self.joint_names = [f'm{l.value}{j.value+1}'for l in Leg for j in Joint]
 
         self.__tf_buffer = Buffer()
@@ -115,20 +38,19 @@ class Akrobat(Node):
         '''The most up-to-date positions of the robot joints'''
 
         self.__default_z = -.145
-        '''default z position of foot relative to akrobat body'''
+        '''default z position of foot relative to leg origin'''
         self.__default_y = .19
-        '''default y position of foot relative to akrobat body'''
+        '''default y position of foot relative to leg origin'''
 
         self.__gait_toggle = True
-        self.__gait_granularity = 3
+        self.__gait_granularity = 10
 
 
         self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
         self.create_subscription(String, '/gait', self.change_gait, 10)
-        # self.__run_timer = self.create_timer(self.gait_period_seconds/2, self.run)
+        self.__run_timer = self.create_timer(self.gait_period_seconds/2, self.run)
 
         self.__joint_trajectory_publisher = self.create_publisher(JointTrajectory, '/joint_trajectory_controller/joint_trajectory', 10)
-        self.lay_down()
 
     @property
     def gait_period_seconds(self):
@@ -289,11 +211,13 @@ class Akrobat(Node):
     def lay_down(self):
         
         stand_trajectory_point = JointTrajectoryPoint()
-        stand_trajectory_point.time_from_start = Duration(nanosec = int(.5 * S_TO_NS))
+        stand_trajectory_point.time_from_start = Duration(nanosec = int(.75 * S_TO_NS))
+
         lay_trajectory_point = JointTrajectoryPoint()
         lay_trajectory_point.time_from_start = Duration(nanosec = int(1.5 * S_TO_NS))
+
         stretch_trajectory_point = JointTrajectoryPoint()
-        stretch_trajectory_point.time_from_start = Duration(nanosec = int(2.5 * S_TO_NS))
+        stretch_trajectory_point.time_from_start = Duration(nanosec = int(2.25 * S_TO_NS))
         stretch_trajectory_point.positions = [0.] * Leg.amount() * Joint.amount_per_leg()
 
         for leg in Leg:
@@ -309,9 +233,35 @@ class Akrobat(Node):
 
         self.__joint_trajectory_publisher.publish(trajectory)
 
+    def stand_up(self):
+        
+        stretch_trajectory_point = JointTrajectoryPoint()
+        stretch_trajectory_point.time_from_start = Duration(nanosec = int(.75 * S_TO_NS))
+        stretch_trajectory_point.positions = [0.] * Leg.amount() * Joint.amount_per_leg()
+
+        lay_trajectory_point = JointTrajectoryPoint()
+        lay_trajectory_point.time_from_start = Duration(nanosec = int(1.5 * S_TO_NS))
+
+        stand_trajectory_point = JointTrajectoryPoint()
+        stand_trajectory_point.time_from_start = Duration(nanosec = int(2.25 * S_TO_NS))
+
+        for leg in Leg:
+            lay_point = Point(x=0., y=self.__default_y, z=0.)
+            lay_trajectory_point.positions.extend(self.__inverse_kinematics(lay_point))
+
+            stand_point = Point(x=0., y=self.__default_y, z=self.__default_z)
+            stand_trajectory_point.positions.extend(self.__inverse_kinematics(stand_point))
+
+        trajectory = JointTrajectory()
+        trajectory.points = [stand_trajectory_point, lay_trajectory_point, stretch_trajectory_point]
+        trajectory.joint_names = self.joint_names
+
+        self.__joint_trajectory_publisher.publish(trajectory)
+
     def shutdown(self):
         self.__run_timer.cancel()
         self.lay_down()
+
 
 def main(args=None):
     rclpy.init(args=args)
@@ -323,6 +273,3 @@ def main(args=None):
         akrobat.shutdown()
         akrobat.destroy_node()
         rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
