@@ -28,7 +28,8 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            f'akrobat = {package_name}.akrobat:main'
+            f'akrobat = {package_name}.akrobat:main',
+            f'joystick_emulator = {package_name}.joystick_emulator:main'
         ],
     },
 )
