@@ -26,30 +26,54 @@
         </joint>
     </xacro:macro>
 
-
-    <xacro:unless value="$(arg simulation)">
-        <ros2_control name="DynamixelSystem" type="system">
-            <hardware>
-                <plugin>dynamixel_hardware/DynamixelHardware</plugin>
-                <param name="usb_port">/dev/ttyUSB0</param>
-                <param name="baud_rate">1000000</param>
-            </hardware>
-
-            <xacro:joints leg_number="1" />
-            <xacro:joints leg_number="2" />
-            <xacro:joints leg_number="3" />
-            <xacro:joints leg_number="4" />
-            <xacro:joints leg_number="5" />
-            <xacro:joints leg_number="6" />
-        </ros2_control>
+    <xacro:unless value="$(arg test)">
+        <xacro:unless value="$(arg simulation)">
+            <ros2_control name="DynamixelSystem" type="system">
+                <hardware>
+                    <plugin>dynamixel_hardware/DynamixelHardware</plugin>
+                    <param name="usb_port">/dev/ttyUSB0</param>
+                    <param name="baud_rate">1000000</param>
+                </hardware>
+    
+                <xacro:joints leg_number="1" />
+                <xacro:joints leg_number="2" />
+                <xacro:joints leg_number="3" />
+                <xacro:joints leg_number="4" />
+                <xacro:joints leg_number="5" />
+                <xacro:joints leg_number="6" />
+            </ros2_control>
+        </xacro:unless>
+    
+        <xacro:if value="$(arg simulation)">
+            <ros2_control name="IgnitionSystem" type="system">
+                <hardware>
+                    <plugin>ign_ros2_control/IgnitionSystem</plugin>
+                </hardware>
+    
+                <xacro:joints leg_number="1" />
+                <xacro:joints leg_number="2" />
+                <xacro:joints leg_number="3" />
+                <xacro:joints leg_number="4" />
+                <xacro:joints leg_number="5" />
+                <xacro:joints leg_number="6" />
+            </ros2_control>
+        </xacro:if>
+    
+        <gazebo>
+            <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
+                <parameters>$(find akrobat)/config/ros2_control.yaml</parameters>
+                <parameters>$(find akrobat)/config/ros2_control_gazebo.yaml</parameters>
+            </plugin>
+        </gazebo>
     </xacro:unless>
 
-    <xacro:if value="$(arg simulation)">
-        <ros2_control name="IgnitionSystem" type="system">
-            <hardware>
-                <plugin>ign_ros2_control/IgnitionSystem</plugin>
-            </hardware>
 
+    <xacro:if value="$(arg test)">
+        <ros2_control name="TestSystem" type="system">
+            <hardware>
+                <plugin>fake_components/GenericSystem</plugin>
+            </hardware>
+    
             <xacro:joints leg_number="1" />
             <xacro:joints leg_number="2" />
             <xacro:joints leg_number="3" />
@@ -58,12 +82,5 @@
             <xacro:joints leg_number="6" />
         </ros2_control>
     </xacro:if>
-
-    <gazebo>
-        <plugin filename="ign_ros2_control-system" name="ign_ros2_control::IgnitionROS2ControlPlugin">
-            <parameters>$(find akrobat)/config/ros2_control.yaml</parameters>
-            <parameters>$(find akrobat)/config/ros2_control_gazebo.yaml</parameters>
-        </plugin>
-    </gazebo>
 
 </robot>

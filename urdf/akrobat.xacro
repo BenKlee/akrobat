@@ -8,8 +8,11 @@
 	<xacro:property name="inertia" value="${xacro.load_yaml(inertia_yaml)}" />
 
 	<xacro:arg name="simulation" default="False"/>
+	<xacro:arg name="test" default="False"/>
 
 	<xacro:include filename="$(find akrobat)/urdf/ros2_control.xacro"/>
+
+	<xacro:include filename="$(find akrobat)/urdf/gazebo.xacro"/>
 
 	<link name="akrobat_link">
 		<visual>
