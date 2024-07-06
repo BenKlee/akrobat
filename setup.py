@@ -18,6 +18,7 @@ setup(
         (os.path.join('share', package_name, 'config'), glob('config/*')),
         (os.path.join('share', package_name, 'stl', 'visual'), glob('stl/visual/*.stl')),
         (os.path.join('share', package_name, 'stl', 'collision'), glob('stl/collision/*.stl')),
+        (os.path.join('share', package_name, 'worlds'), glob('worlds/*')),
     ],
     install_requires=['setuptools'],
     zip_safe=True,

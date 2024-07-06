@@ -1,7 +1,9 @@
+import os
+from ament_index_python import get_package_share_directory
 from launch import LaunchDescription
 from launch.conditions import IfCondition
 from launch.actions import DeclareLaunchArgument, IncludeLaunchDescription, AppendEnvironmentVariable
-from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command
+from launch.substitutions import LaunchConfiguration, PathJoinSubstitution, Command, PythonExpression
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 
 from launch_ros.actions import Node
@@ -36,19 +38,36 @@ def generate_launch_description():
         PythonLaunchDescriptionSource(
             PathJoinSubstitution([FindPackageShare('ros_gz_sim'), 'launch', 'gz_sim.launch.py'])
         ),
-        launch_arguments={'gz_args': ['-r -v4 empty.sdf']}.items()
+        launch_arguments={
+            'gz_args': [PathJoinSubstitution([FindPackageShare(package_name), 'worlds', 'empty.sdf'])]
+            # 'gz_args': ['-r -s empty.sdf']
+            # 'gz_args': ['asdf.sdf']
+        }.items()
+    ))
+
+    ld.add_action(Node(
+        package='ros_gz_bridge',
+        executable='parameter_bridge',
+        arguments=[
+            '--ros-args',
+            '-p',
+            f'config_file:={os.path.join(get_package_share_directory(package_name), "config", "gazebo_bridge.yaml")}',
+        ],
+        output='screen',
     ))
 
     ld.add_action(IncludeLaunchDescription(
         launch_description_source=PythonLaunchDescriptionSource(
             launch_file_path=PathJoinSubstitution([FindPackageShare(package_name), 'launch', 'include', 'rviz.launch.py'])
         ),
-        condition=IfCondition(LaunchConfiguration('rviz'))
+        condition=IfCondition(LaunchConfiguration('rviz')),
+        launch_arguments={'use_sim_time': 'True'}.items()
     ))
 
     ld.add_action(Node(
         package=package_name,
         executable='akrobat',
+        parameters=[{'use_sim_time': True}],
         output='screen'
     ))
 
@@ -62,7 +81,7 @@ def generate_launch_description():
                 Command(['xacro ', PathJoinSubstitution([FindPackageShare(package_name), 'urdf', 'akrobat.xacro']), ' simulation:=True']),
                 value_type=str
             ),
-            'use_sim_time': ParameterValue(True, value_type=bool)
+            'use_sim_time': True
         }]
     ))
 
