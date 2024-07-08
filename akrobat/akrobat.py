@@ -12,7 +12,7 @@ from numpy import radians
 from math import cos, acos, pi, sin, sqrt, atan2
 
 from builtin_interfaces.msg import Duration
-from std_msgs.msg import String
+from std_msgs.msg import String, Float64
 from trajectory_msgs.msg import JointTrajectory, JointTrajectoryPoint
 from geometry_msgs.msg import Point
 from tf2_geometry_msgs import PointStamped
@@ -43,11 +43,12 @@ class Akrobat(Node):
         '''default y position of foot relative to leg origin'''
 
         self.__gait_toggle = True
-        self.__gait_granularity = 10
+        self.__gait_granularity = 3
 
 
         self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
         self.create_subscription(String, '/gait', self.change_gait, 10)
+        self.create_subscription(Float64, '/gait_speed', self.change_speed, 10)
         self.__run_timer = self.create_timer(self.gait_period_seconds/2, self.run)
 
         self.__joint_trajectory_publisher = self.create_publisher(JointTrajectory, '/joint_trajectory_controller/joint_trajectory', 10)
@@ -68,7 +69,7 @@ class Akrobat(Node):
         # TODO handle value == 0
         self.__gait_speed_modifier = value
         period_sec = self.gait_period_seconds/2
-        period_ns = period_sec / S_TO_NS
+        period_ns = period_sec * S_TO_NS
         self.__run_timer.timer_period_ns = period_ns
 
     def __update_positions(self, joint_state: JointState):
@@ -129,6 +130,18 @@ class Akrobat(Node):
     def change_gait(self, msg: String):
         self.__current_gait = Gait(msg.data)
         self.get_logger().info(f'switched gait to {self.__current_gait}')
+        
+        # gait toggle is already ready for next gait, so it needs to be reset to update the current gait
+        self.__gait_toggle = not self.__gait_toggle
+        self.run()
+
+    def change_speed(self, msg: Float64):
+        self.gait_speed_modifier = msg.data
+        self.get_logger().info(f'changing gait speed to {round(self.gait_speed_modifier*100, 2)}%')
+
+        # gait toggle is already ready for next gait, so it needs to be reset to update the current gait
+        self.__gait_toggle = not self.__gait_toggle
+        self.run()
 
     def t_pose(self):
         trajectory = JointTrajectory()
@@ -138,7 +151,7 @@ class Akrobat(Node):
 
         self.__joint_trajectory_publisher.publish(trajectory)
 
-    def tripod(self):
+    def tripod(self, time_since_gait_start: float = 0):
         # TODO add direction parameter so that tripod can walk in x, -x, y and -y
 
 
@@ -179,34 +192,46 @@ class Akrobat(Node):
         trajectory.joint_names = self.joint_names
 
         for time_step in range(self.__gait_granularity-1):
-            point = calculate_point(time_step)
-            point.time_from_start = Duration(nanosec = int((time_step/self.__gait_granularity) * (self.gait_period_seconds/2 * S_TO_NS)))
-            trajectory.points.append(point)
+            planned_time_from_start = (time_step/self.__gait_granularity) * (self.gait_period_seconds/2)
+            actual_time_from_start = planned_time_from_start - time_since_gait_start
+
+            # only add points in the future
+            if actual_time_from_start >= 0:
+                point = calculate_point(time_step)
+                sec = int(actual_time_from_start)
+                nanosec = int(((actual_time_from_start)%1) * S_TO_NS)
+                point.time_from_start = Duration(sec=sec, nanosec=nanosec)
+                trajectory.points.append(point)
 
         self.__gait_toggle = not self.__gait_toggle
 
         # transition to next iteration
         point = calculate_point(0)
-        point.time_from_start = Duration(nanosec= int(self.gait_period_seconds/2 * S_TO_NS))
-        trajectory.points.append(point)
+        actual_time_from_start = self.gait_period_seconds/2 - time_since_gait_start
+        if actual_time_from_start >= 0:
+            sec = int(actual_time_from_start)
+            nanosec = int(((actual_time_from_start)%1) * S_TO_NS)
+            point.time_from_start = Duration(sec=sec, nanosec=nanosec)
+            trajectory.points.append(point)
 
         self.__joint_trajectory_publisher.publish(trajectory)
 
-    def wave(self):
+    def wave(self, time_since_gait_start: float = 0):
         raise NotImplementedError
     
-    def ripple(self):
+    def ripple(self, time_since_gait_start: float = 0):
         raise NotImplementedError
 
     def run(self):
+        offset = self.__run_timer.time_since_last_call() / S_TO_NS
         if self.__current_gait is Gait.T_POSE:
             self.t_pose()
         elif self.__current_gait is Gait.TRIPOD:
-            self.tripod()
+            self.tripod(offset)
         elif self.__current_gait is Gait.WAVE:
-            self.wave()
+            self.wave(offset)
         elif self.__current_gait is Gait.RIPPLE:
-            self.ripple()
+            self.ripple(offset)
         
     def lay_down(self):
         
