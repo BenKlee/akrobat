@@ -19,6 +19,7 @@ from tf2_geometry_msgs import PointStamped
 from sensor_msgs.msg import JointState
 
 from akrobat.enums import *
+from akrobat.utils import calculate_angle_between_vectors, rotate_point_around_point
 
 
 class Akrobat(Node):
@@ -37,10 +38,9 @@ class Akrobat(Node):
         self.__current_positions = None
         '''The most up-to-date positions of the robot joints'''
 
-        self.__default_z = -.145
-        '''default z position of foot relative to leg origin'''
-        self.__default_y = .19
-        '''default y position of foot relative to leg origin'''
+        self.__default_foot_position = Point(x=.0, y=.19, z=-.145)
+        '''default position of foot relative to leg origin'''
+        self.__default_walk_direction = Point(x=1., y=.0, z=.0)
 
         self.__gait_toggle = True
         self.__gait_granularity = 3
@@ -151,7 +151,7 @@ class Akrobat(Node):
 
         self.__joint_trajectory_publisher.publish(trajectory)
 
-    def tripod(self, time_since_gait_start: float = 0):
+    def tripod(self, time_since_gait_start: float = 0, direction_vector: Point = Point(x=1., y=0., z=0.)):
         # TODO add direction parameter so that tripod can walk in x, -x, y and -y
 
 
@@ -167,17 +167,20 @@ class Akrobat(Node):
 
             for leg in Leg:
 
-                y = self.__default_y
+                y = self.__default_foot_position.y
                 is_left_leg = leg.value%2 == 1
                 
                 if leg in return_stroke:
                     x = .05 * -cos(pi * time_step / self.__gait_granularity)
-                    z = self.__default_z + .06 * sin(pi * time_step / self.__gait_granularity)
+                    z = self.__default_foot_position.z + .06 * sin(pi * time_step / self.__gait_granularity)
                 else:
                     x = .05 - 2 * .05 * time_step / self.__gait_granularity
-                    z = self.__default_z
+                    z = self.__default_foot_position.z
 
-                alpha, beta, gamma = self.__inverse_kinematics(Point(x=x if is_left_leg else -x, y=y, z=z))
+                angle = calculate_angle_between_vectors(self.__default_walk_direction, direction_vector)
+                _point = rotate_point_around_point(Point(x=x if is_left_leg else -x, y=y, z=z), self.__default_foot_position, angle)
+
+                alpha, beta, gamma = self.__inverse_kinematics(_point)
 
                 positions[leg.joint_index(Joint.alpha)] = alpha
                 positions[leg.joint_index(Joint.beta)] = beta
@@ -227,7 +230,7 @@ class Akrobat(Node):
         if self.__current_gait is Gait.T_POSE:
             self.t_pose()
         elif self.__current_gait is Gait.TRIPOD:
-            self.tripod(offset)
+            self.tripod(offset, Point(x=1., y=1., z=0.))
         elif self.__current_gait is Gait.WAVE:
             self.wave(offset)
         elif self.__current_gait is Gait.RIPPLE:
@@ -246,10 +249,10 @@ class Akrobat(Node):
         stretch_trajectory_point.positions = [0.] * Leg.amount() * Joint.amount_per_leg()
 
         for leg in Leg:
-            stand_point = Point(x=0., y=self.__default_y, z=self.__default_z)
+            stand_point = Point(x=0., y=self.__default_foot_position.y, z=self.__default_foot_position.z)
             stand_trajectory_point.positions.extend(self.__inverse_kinematics(stand_point))
 
-            lay_point = Point(x=0., y=self.__default_y, z=0.)
+            lay_point = Point(x=0., y=self.__default_foot_position.y, z=0.)
             lay_trajectory_point.positions.extend(self.__inverse_kinematics(lay_point))
 
         trajectory = JointTrajectory()
@@ -271,10 +274,10 @@ class Akrobat(Node):
         stand_trajectory_point.time_from_start = Duration(nanosec = int(2.25 * S_TO_NS))
 
         for leg in Leg:
-            lay_point = Point(x=0., y=self.__default_y, z=0.)
+            lay_point = Point(x=0., y=self.__default_foot_position.y, z=0.)
             lay_trajectory_point.positions.extend(self.__inverse_kinematics(lay_point))
 
-            stand_point = Point(x=0., y=self.__default_y, z=self.__default_z)
+            stand_point = Point(x=0., y=self.__default_foot_position.y, z=self.__default_foot_position.z)
             stand_trajectory_point.positions.extend(self.__inverse_kinematics(stand_point))
 
         trajectory = JointTrajectory()
