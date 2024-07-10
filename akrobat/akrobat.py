@@ -41,6 +41,7 @@ class Akrobat(Node):
         self.__default_foot_position = Point(x=.0, y=.19, z=-.145)
         '''default position of foot relative to leg origin'''
         self.__default_walk_direction = Point(x=1., y=.0, z=.0)
+        self.__current_walk_direction = self.__default_walk_direction
 
         self.__gait_toggle = True
         self.__gait_granularity = 3
@@ -49,6 +50,7 @@ class Akrobat(Node):
         self.create_subscription(JointState, 'joint_states', self.__update_positions, 10)
         self.create_subscription(String, '/gait', self.change_gait, 10)
         self.create_subscription(Float64, '/gait_speed', self.change_speed, 10)
+        self.create_subscription(Point, '/gait_direction', self.change_direction, 10)
         self.__run_timer = self.create_timer(self.gait_period_seconds/2, self.run)
 
         self.__joint_trajectory_publisher = self.create_publisher(JointTrajectory, '/joint_trajectory_controller/joint_trajectory', 10)
@@ -143,6 +145,14 @@ class Akrobat(Node):
         self.__gait_toggle = not self.__gait_toggle
         self.run()
 
+    def change_direction(self, msg: Point):
+        self.__current_walk_direction = msg
+        self.get_logger().info(f'changing gait direction to {msg}')
+
+        # gait toggle is already ready for next gait, so it needs to be reset to update the current gait
+        self.__gait_toggle = not self.__gait_toggle
+        self.run()
+
     def t_pose(self):
         trajectory = JointTrajectory()
         trajectory.joint_names = self.joint_names
@@ -219,10 +229,10 @@ class Akrobat(Node):
 
         self.__joint_trajectory_publisher.publish(trajectory)
 
-    def wave(self, time_since_gait_start: float = 0):
+    def wave(self, time_since_gait_start: float = 0, direction_vector: Point = Point(x=1., y=0., z=0.)):
         raise NotImplementedError
     
-    def ripple(self, time_since_gait_start: float = 0):
+    def ripple(self, time_since_gait_start: float = 0, direction_vector: Point = Point(x=1., y=0., z=0.)):
         raise NotImplementedError
 
     def run(self):
@@ -230,11 +240,11 @@ class Akrobat(Node):
         if self.__current_gait is Gait.T_POSE:
             self.t_pose()
         elif self.__current_gait is Gait.TRIPOD:
-            self.tripod(offset, Point(x=1., y=1., z=0.))
+            self.tripod(offset, self.__current_walk_direction)
         elif self.__current_gait is Gait.WAVE:
-            self.wave(offset)
+            self.wave(offset, self.__current_walk_direction)
         elif self.__current_gait is Gait.RIPPLE:
-            self.ripple(offset)
+            self.ripple(offset, self.__current_walk_direction)
         
     def lay_down(self):
         

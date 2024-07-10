@@ -33,17 +33,24 @@ def rotate_point_around_point(point_x: Point, rotation_point: Point, radians: fl
 
 def calculate_angle_between_vectors(v1: Point, v2: Point):
     # Convert the vectors to numpy arrays
-    v1 = np.array([v1.x, v1.y, v1.z])
-    v2 = np.array([v2.x, v2.y, v2.z])
-
+    v1 = np.array([v1.x, v1.y])
+    v2 = np.array([v2.x, v2.y])
+    
     # Calculate the dot product
     dot_product = np.dot(v1, v2)
-
+    
     # Calculate the magnitudes (norms) of the vectors
     norm_v1 = np.linalg.norm(v1)
     norm_v2 = np.linalg.norm(v2)
-
+    
     # Calculate the angle in radians
     angle_rad = np.arccos(dot_product / (norm_v1 * norm_v2))
-
+    
+    # Calculate the cross product (in 2D, it's a scalar representing the z-component)
+    cross_product_z = np.cross(v1, v2)
+    
+    # Determine the sign of the angle
+    if cross_product_z < 0:
+        angle_rad = -angle_rad
+    
     return angle_rad
