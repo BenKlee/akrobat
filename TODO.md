@@ -7,6 +7,7 @@ This file compiles all things that need work or ideas for further development.
 ### gaits
 - implement wave and ripple gait
 - implement turning
+- implement roll pitch yaw control
 
 ### autonomous navigation
 - was implemented in ROS1 previously using move_base which is now Nav2
@@ -35,6 +36,7 @@ This file compiles all things that need work or ideas for further development.
     - currently inertia is calculated with the incorrect assumption that all links are cuboids
     - these are not very accurate but it does not seem to affect the simulation too much
     - in rviz see RobotModel -> Mass Properties for visualization
+- integrate models of the new feet
 
 ## hardware
 

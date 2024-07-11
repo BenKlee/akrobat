@@ -1,11 +1,11 @@
-# Akrobat repository
+# akrobat repository
 
 This is the main repository for the akrobat robot.
 It contains the main ROS2 package. \
 Additional packages for various sensors are:
-- [akrobat_imu](https://github.com/informatik-mannheim/akrobat_imu.git)
+- [akrobat_imu](https://github.com/informatik-mannheim/akrobat_imu)
 - akrobat_depth_cam
-- [akrobat_cam](https://github.com/informatik-mannheim/akrobat_cam.git) (needs ROS Humble implementation)
+- [akrobat_cam](https://github.com/informatik-mannheim/akrobat_cam) (needs ROS Humble implementation)
 
 
 ## In this readme
