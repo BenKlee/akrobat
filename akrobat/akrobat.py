@@ -162,8 +162,6 @@ class Akrobat(Node):
         self.__joint_trajectory_publisher.publish(trajectory)
 
     def tripod(self, time_since_gait_start: float = 0, direction_vector: Point = Point(x=1., y=0., z=0.)):
-        # TODO add direction parameter so that tripod can walk in x, -x, y and -y
-
 
         def calculate_point(time_step: int) -> JointTrajectoryPoint:
             point = JointTrajectoryPoint()
@@ -207,6 +205,10 @@ class Akrobat(Node):
         for time_step in range(self.__gait_granularity-1):
             planned_time_from_start = (time_step/self.__gait_granularity) * (self.gait_period_seconds/2)
             actual_time_from_start = planned_time_from_start - time_since_gait_start
+
+            # grace period where steps are not considered in the past
+            if actual_time_from_start < 0 and actual_time_from_start > -.1:
+                actual_time_from_start = 0
 
             # only add points in the future
             if actual_time_from_start >= 0:
