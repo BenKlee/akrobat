@@ -23,7 +23,7 @@ def generate_launch_description():
 
     ld.add_action(IncludeLaunchDescription(
         launch_description_source=PythonLaunchDescriptionSource(
-            launch_file_path=PathJoinSubstitution([FindPackageShare('royale_in_ros2'), 'launch', 'camera_driver.launch.py'])
+            launch_file_path=PathJoinSubstitution([FindPackageShare('akrobat_depth_cam'), 'launch', 'camera_driver.launch.py'])
         )
     ))
 
@@ -46,7 +46,7 @@ def generate_launch_description():
         parameters=[PathJoinSubstitution([FindPackageShare('akrobat'), 'config', 'ros2_control.yaml'])],
         remappings=[('/controller_manager/robot_description', '/robot_description')],
         # arguments=['--ros-args', '--log-level', 'debug'],
-        output='screen'
+        output='log'
     )
     ld.add_action(controller_manager)
 
