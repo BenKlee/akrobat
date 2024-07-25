@@ -23,7 +23,7 @@ This file compiles all things that need work or ideas for further development.
 
 - dynamixel hardware interface only writes, cannot read
     - this leads to unwanted behaviour on startup where the robot tries to move all motors to position 0 and crashing into itself
-    - [github issue](https://github.com/dynamixel-community/dynamixel_hardware/issues/90#issuecomment-2243505547) for this problem, with promised fix in [this pull request](https://github.com/dynamixel-community/dynamixel_hardware/pull/89)
+    - [github issue](https://github.com/dynamixel-community/dynamixel_hardware/issues/90#issuecomment-2243505547) for this (or similar?) problem, with promised fix in [this pull request](https://github.com/dynamixel-community/dynamixel_hardware/pull/89)
 
 ### gazebo
 
