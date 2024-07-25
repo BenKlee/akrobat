@@ -39,8 +39,18 @@ This file compiles all things that need work or ideas for further development.
     - in rviz see RobotModel -> Mass Properties for visualization
 - integrate models of the new feet
 
+
 ## hardware
+
+### front of robot
 
 - replace front raspberry pi (stereopi)
     - front raspberry pi ethernet connection to other pi was unstable
     - suddenly stopped working completely
+
+### sensors
+
+- add transform from akrobat link to depth camera link (RoyaleInRos_link)
+    - use `ros2 run tf2_tools view_frames`
+
+- implement stereo camera
